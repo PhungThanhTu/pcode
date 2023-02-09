@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  mssql:
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    container_name: mssql         # tên container
+    restart: always
+    user: root
+    hostname: mssql
+    environment:
+      SA_PASSWORD: Superadmin123456!1       #Thiết lập password
+      ACCEPT_EULA: Y
+    volumes:
+      - mssql:/var/opt/mssql
+    ports:
+          - "1400:1433"                               # cổng kết nối
+volumes:
+    mssql:

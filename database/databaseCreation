@@ -1,0 +1,116 @@
+drop database if exists  plp_db
+go
+create database plp_db
+go
+use plp_db
+GO
+
+-- setup PlpUser
+create table PlpUser
+(
+    id UNIQUEIDENTIFIER PRIMARY KEY,
+    username varchar(20),
+    hashedPassword varchar(max),
+    email varchar(max),
+    fullName nvarchar(max),
+    refreshToken varchar(max),
+    expiryDate datetime,
+    avatar nvarchar(max)
+);
+GO
+
+
+-- created
+create procedure RegisterPlpUser 
+    @id UNIQUEIDENTIFIER, 
+    @username varchar(20), 
+    @hashedPassword varchar(max), 
+    @email varchar(max),
+    @fullName nvarchar(max)
+    AS
+        begin
+            insert into PlpUser 
+            (id,username,hashedPassword,email,fullName) values (
+                @id,
+                @username,
+                @hashedPassword,
+                @email,
+                @fullName
+            )
+        end
+    go
+
+-- created
+create procedure GetUserByUsername
+    @username varchar(20)
+    AS
+        select id,username,hashedPassword,email,fullName,refreshToken,expiryDate,avatar
+        from [dbo].[PlpUser]
+        where username = @username
+    go
+-- created
+create procedure GetUserById
+    @id UNIQUEIDENTIFIER
+    AS
+        select id,username,hashedPassword,email,fullName,refreshToken,expiryDate,avatar
+        from [dbo].[PlpUser]
+        where id= @id
+    go
+
+create procedure UpdateRefreshToken
+    @id UNIQUEIDENTIFIER,
+    @refreshToken varchar(max),
+    @expiryDate DATETIME
+    AS
+    BEGIN
+        update PlpUser
+            set refreshToken = @refreshToken,
+                expiryDate = @expiryDate
+            where id = @id
+            
+    END
+    go
+
+
+create procedure UpdateUser
+    @id UNIQUEIDENTIFIER,
+    @fullName nvarchar(max),
+    @email nvarchar(max)
+    as
+        update [dbo].[PlpUser]
+            set fullName = @fullName,
+                email = @email
+            where id = @id
+    GO
+
+create procedure UpdatePassword
+    @id UNIQUEIDENTIFIER,
+    @hashedPassword NVARCHAR(max)
+    AS
+        update [dbo].[PlpUser]
+            set hashedPassword = @hashedPassword
+            where id = @id
+    GO
+
+create procedure UpdateAvatar
+    @id UNIQUEIDENTIFIER,
+    @avatar NVARCHAR(max)
+    AS
+        update [dbo].[PlpUser]
+            set hashedPassword = @hashedPassword
+            where id = @id
+    GO
+go
+
+-- cleanup procedures
+drop procedure RegisterPlpUser
+drop procedure UpdateRefreshToken
+drop procedure GetUserByUsername
+drop procedure UpdateUser
+drop procedure UpdatePassword
+drop procedure UpdateAvatar
+drop procedure GetUserById
+
+    
+select * from [dbo].[PlpUser]
+TRUNCATE table [PlpUser]
