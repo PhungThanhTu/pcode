@@ -7,12 +7,12 @@ exports.authorizedRoute = async (req,res,next) => {
     const secret = process.env.JWT_SECRET;
 
     if(!accessToken)
-        return res.sendStatus(403);
+        return res.sendStatus(401);
 
     const tokenData = await verifyToken(accessToken,secret);
 
     if(!tokenData)
-        return res.sendStatus(403);
+        return res.sendStatus(401);
 
     req.identity = tokenData.payload.id;
 

@@ -30,9 +30,8 @@ router.post('/register', async (req,res) => {
 
         const username = validatedRegisterRequest.username;
         const mayBeAvailableUser = await getUserByUsername(username);
-        console.log("username not available");
         console.log(mayBeAvailableUser);
-        if(mayBeAvailableUser && mayBeAvailableUser.length >= 1)
+        if(mayBeAvailableUser)
             return res.sendStatus(409);
 
         const password = validatedRegisterRequest.password;

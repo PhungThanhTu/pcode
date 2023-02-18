@@ -10,13 +10,13 @@ exports.handleExceptionInResponse = (res,err) => {
 
     if(err instanceof Error)
     {
-        return res.status(408).json(
+        return res.status(400).json(
             {
                 message: err.message
             }
         )
     }
 
-    return res.sendStatus(408);
+    return res.sendStatus(400);
         
 }
