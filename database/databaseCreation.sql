@@ -59,7 +59,6 @@ insert into [dbo].[ProgrammingLanguage]
 VALUES 
 (1,'c','c'),
 (2,'cpp','cpp'),
-(3,'javascript','js')
 
 create table SampleSourceCode
 (
@@ -116,6 +115,7 @@ go
 insert into [dbo].[RunStatus]
 (id,statusDescription)
 VALUES
+(0,'Pending'),
 (1,'Accepted'),
 (2,'Wrong'),
 (3,'Compliation Error'),
