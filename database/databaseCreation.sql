@@ -48,9 +48,18 @@ go
 create table ProgrammingLanguage
 (
     id int PRIMARY KEY,
-    languageName varchar(20)
+    languageName varchar(20),
+    fileExtension varchar(10),
+
 );
 go
+
+insert into [dbo].[ProgrammingLanguage] 
+(id,languageName)
+VALUES 
+(1,'c','c'),
+(2,'cpp','cpp'),
+(3,'javascript','js')
 
 create table SampleSourceCode
 (
@@ -76,12 +85,12 @@ create table JudgeStatus (
     statusDescription nvarchar(50)
 )
 
+
 create table Submission
 (
     id UNIQUEIDENTIFIER PRIMARY KEY,
     exerciseId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[Exercise](id) NOT NULL,
     score float,
-    judgeStatus int FOREIGN KEY REFERENCES [dbo].[JudgeStatus](id),
     averageTime float,
     averageMemory float,
     timeCreated smalldatetime 
@@ -103,6 +112,17 @@ create table RunStatus (
     statusDescription nvarchar(50)
 );
 go
+
+insert into [dbo].[RunStatus]
+(id,statusDescription)
+VALUES
+(1,'Accepted'),
+(2,'Wrong'),
+(3,'Compliation Error'),
+(4,'Runtime Error'),
+(5,'Memory Limit Exceeded'),
+(6,'Time Limit Exceeded'),
+(7,'Others')
 
 create table SubmissionTestResult
 (
@@ -129,7 +149,7 @@ drop table Submission
 drop table RunStatus
 drop table JudgeStatus
 drop table MetaTestCase
-drop table sampleSourceCode
+drop table SampleSourceCode
 drop table ProgrammingLanguage
 drop table Exercise
 drop table course 
