@@ -25,7 +25,6 @@ create table Course
     title nvarchar(max)
 );
 go
-
 create table Exercise
 (
     id UNIQUEIDENTIFIER PRIMARY KEY,
@@ -35,7 +34,6 @@ create table Exercise
     timeCreated smalldatetime
 );
 go
-
 create table CourseExercise
 (
     courseId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[Course](id),
@@ -44,7 +42,6 @@ create table CourseExercise
     document nvarchar(max)
 );
 go
-
 create table ProgrammingLanguage
 (
     id int PRIMARY KEY,
@@ -53,13 +50,12 @@ create table ProgrammingLanguage
 
 );
 go
-
 insert into [dbo].[ProgrammingLanguage] 
 (id,languageName)
 VALUES 
 (1,'c','c'),
-(2,'cpp','cpp'),
-
+(2,'cpp','cpp')
+go
 create table SampleSourceCode
 (
     exerciseId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[Exercise](id) NOT NULL,
@@ -68,7 +64,6 @@ create table SampleSourceCode
     CONSTRAINT PK_SampleSourceCode PRIMARY KEY (exerciseId,programmingLanguageId)
 );
 go
-
 create table MetaTestCase
 (
     id UNIQUEIDENTIFIER PRIMARY KEY,
@@ -78,13 +73,6 @@ create table MetaTestCase
     scoreWeight int,
 );
 go
-
-create table JudgeStatus (
-    id int primary key,
-    statusDescription nvarchar(50)
-)
-
-
 create table Submission
 (
     id UNIQUEIDENTIFIER PRIMARY KEY,
@@ -95,7 +83,6 @@ create table Submission
     timeCreated smalldatetime 
 );
 go
-
 create table SubmissionSourceCode
 (
     submissionId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[Submission](id) NOT NULL,
@@ -103,15 +90,11 @@ create table SubmissionSourceCode
     sourceCode nvarchar(max)
 );
 go
-
-
-
 create table RunStatus (
     id int primary key,
     statusDescription nvarchar(50)
 );
 go
-
 insert into [dbo].[RunStatus]
 (id,statusDescription)
 VALUES
@@ -123,7 +106,6 @@ VALUES
 (5,'Memory Limit Exceeded'),
 (6,'Time Limit Exceeded'),
 (7,'Others')
-
 create table SubmissionTestResult
 (
     submissionId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[Submission](id) NOT NULL,
