@@ -110,5 +110,5 @@ isolate/isolate.1.html
 isolate/*.o
 
 example/
-
+.vscode/
 *.DS_Store
