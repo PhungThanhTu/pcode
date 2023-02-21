@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  mssql:
+    image: "mcr.microsoft.com/azure-sql-edge:latest"
+    container_name: mssql        # tên container
+    restart: always
+    user: root
+    hostname: mssql
+    environment:
+      SA_PASSWORD: "Superadmin123456!1"       #Thiết lập password
+      ACCEPT_EULA: Y
+    volumes:
+      - mssql:/var/opt/mssql
+    ports:
+          - "1433:1433"                     # cổng kết nối
+    expose:
+      - 1433
+  server:
+    container_name: plp_server
+    privileged: true
+    image: plp_server
+    env_file:
+      - ./server/.env
+    volumes:
+      - ./example:/usr/local/etc/isolate/example/
+      - ./server:/server
+      - /server/node_modules
+    build:
+      context: .
+      dockerfile: ./Dockerfile 
+    ports:
+      - "8000:8000"
+volumes:
+    mssql:
