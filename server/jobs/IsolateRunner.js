@@ -57,6 +57,59 @@ const writeSourceCode = async (path,sourceCode) => {
     await fs.writeFile(path,sourceCode);
 }
 
+const compileSourceCode = async (submissionId,extension,boxid) => {
+    const compileScript =  `-- /usr/bin/g++ -o ${submissionId} ${submissionId}.${extension}`;
+    const compileMetaName = `${BOX_DIR_PREFIX}${boxid}/box/compile_${submissionId}.txt`;
+    try {
+        execSync(`isolate -b ${boxid} --mem 128000 --time 2 -p -E PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin -M ${compileMetaName} --run ${compileScript}`);
+        return submissionId;
+    }
+    catch (err) {
+        throw new Error(`Compile filed with error ${err}`);
+    }
+
+}
+
+const populateInputFile = async (boxid,testId,input) => {
+    try {
+        const inputPath = `${BOX_DIR_PREFIX}${boxid}/box/${testId}.in`;
+        await fs.writeFile(inputPath,input);
+        return inputPath;
+    }
+    catch (err)
+    {
+        throw new Error(`Cannot create input file in testcase ${testId}`)
+    }
+}
+
+const runTestCase = async (testId,boxid, runScript, inputPath, runFile) => {
+    const metaFile = `${BOX_DIR_PREFIX}${boxid}/box/run_${testId}.txt`;
+    const actualOutputPath = `${BOX_DIR_PREFIX}${boxid}/box/${testId}.out`
+    const runCommand = `isolate -b ${boxid} -p -E PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin -M ${metaFile} -i ${inputPath} -o ${actualOutputPath} --run ${runScript}${runFile}`;
+    try {
+        execSync(runCommand);
+        return actualOutputPath;
+    }
+    catch (err)
+    {
+        throw new Error(`Cannot run the source code in test case ${testId}`)
+    }
+}
+
+
+const judgeSingleTestcase = async (testcase, runScript, boxid, runFile) => {
+    // populate input files
+    const testId = testcase.testId;
+    const input = testcase.input;
+    const inputPath = await populateInputFile(boxid,testId,input);
+    // run code
+    const actualOutputPath = await runTestCase(testId,boxid,runScript,inputPath,runFile);
+    // get actual output
+    // compare with expected output
+    // verify meta result
+    // update test result database
+}
+
 async function judgeSubmission(submissionId,languageId) 
 {
     try
@@ -104,18 +157,12 @@ async function judgeSubmission(submissionId,languageId)
         const sourceCodePath = `${BOX_DIR_PREFIX}${boxid}/box/${submissionId}.${extension}`;
         await writeSourceCode(sourceCodePath,sourceCode);
         // compile code
-        const compileScript =  `-- /usr/bin/g++ -o ${submissionId} ${submissionId}.${extension}`;
-        const compileMetaName = `${BOX_DIR_PREFIX}${boxid}/box/compile_${submissionId}.txt`;
-        try {
-            execSync(`isolate -b ${boxid} --mem 12800 --time 2 -p -E PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin -M ${compileMetaName} --run ${compileScript}`);
-        }
-        catch (err) {
-            throw new Error(`Compile filed with error ${err}`);
-        }
-        // foreach test case
-            // run code
-            // verify meta result
-            // update test result database
+        const compiledFile = await compileSourceCode(submissionId,extension,boxid);
+
+
+        
+            
+            
         // clean up
     }
     catch (err) {
@@ -127,3 +174,7 @@ async function judgeSubmission(submissionId,languageId)
 
 
 judgeSubmission('40a50118-e207-4672-9a44-7bf0aa51be76',2);
+//populateInputFile(759,'8EFA93AD-0DAE-4A6D-9E6D-55777A4645BF','1 2');
+
+//runTestCase('8EFA93AD-0DAE-4A6D-9E6D-55777A4645BF',759,'./40a50118-e207-4672-9a44-7bf0aa51be76','8EFA93AD-0DAE-4A6D-9E6D-55777A4645BF.in','40a50118-e207-4672-9a44-7bf0aa51be76');
+
