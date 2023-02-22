@@ -217,38 +217,15 @@ create procedure UpdateAvatar
     GO
 go
 ---- JUDGE DATABASE
-create procedure CreateCourse
-as
-go
+create procedure GetTestCasesBySubmissionId 
+    @Id UNIQUEIDENTIFIER
+    AS
+        select m.id as testId, m.input, m.expectedOutput, m.scoreWeight from [dbo].[MetaTestCase] m join [dbo].[Exercise] e on m.exercise = e.id
+        join [dbo].[Submission] s on s.exerciseId = e.id
+        where s.id = @Id
+    GO
 
-create procedure CreateExercise
-AS
-go
-
-create procedure CreateTestCase
-AS
-GO
-
-create procedure CreateSubmission
-AS
-GO
-
-create procedure UpsertSubmissionTestResult
-AS
-go
-
-create procedure DeleteSubmissionTestResult
-AS
-go
-
-create procedure DeleteSubmission
-AS
-go
-
-create procedure DeleteExercise
-AS
-go
-
+EXEC GetTestCasesBySubmissionId @Id = '40a50118-e207-4672-9a44-7bf0aa51be76'
 -- cleanup procedures
 drop procedure RegisterPlpUser
 drop procedure UpdateRefreshToken
@@ -258,6 +235,7 @@ drop procedure UpdatePassword
 drop procedure UpdateAvatar
 drop procedure GetUserById
 
+drop procedure GetTestCasesBySubmissionId
     
 -- TEST
 select * from SubmissionTestResult
@@ -353,6 +331,6 @@ values
 ('40a50118-e207-4672-9a44-7bf0aa51be76','8efa93ad-0dae-4a6d-9e6d-55777a4645bf',2,0),
 ('137bc48a-fa98-4167-abc4-889f61a2e2db','8efa93ad-0dae-4a6d-9e6d-55777a4645bf',2,0),
 ('9f4d8da1-a41a-406e-a7c4-64e4e67f1696','8efa93ad-0dae-4a6d-9e6d-55777a4645bf',2,0)
+go
 
 
-select s.id as SubmissionId, e.id as ExerciseId from [dbo].[Submission] s join [dbo].[Exercise] e on s.exerciseId = e.id

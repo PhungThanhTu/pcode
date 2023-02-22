@@ -5,6 +5,17 @@ const fs = require('fs/promises')
 
 const BOX_DIR_PREFIX = '/usr/local/etc/isolate/example/'
 
+const getExercise = async (id) => {
+    const query = "select * from [dbo].[Exercise] where id = @id";
+
+    const pool = await sql.connect(sqlConfig);
+    const request = await pool.request().input('id',sql.UniqueIdentifier,id).query(query);
+    await pool.close();
+    const result = request.recordset[0];
+    console.log(result);
+    return result;
+}
+
 const getLanguageExtension = async (id) => {
     const query = "select * from [dbo].[ProgrammingLanguage] where id = @id";
 
@@ -34,7 +45,7 @@ const getTestCases = async (id) => {
         .input('Id',sql.UniqueIdentifier,id)
         .query(query);
     pool.close();
-    const result = request.recordset[0];
+    const result = request.recordset;
     console.log(result);
     return result;
 }
@@ -82,18 +93,66 @@ const populateInputFile = async (boxid,testId,input) => {
     }
 }
 
-const verifyTestcase = async (testId, metaFile, expectedOutput, actualOutputPath) => {
-    // run time
-    // memory usage
-    // exit code 
-    // actual stdout
-    // stderr
+const verifyTestcase = async (testId, boxid, expectedOutput, actualOutputPath, memoryLimit) => {
+    const metaFile = `${BOX_DIR_PREFIX}${boxid}/box/run_${testId}.txt`;
+    const metaBuffer = await fs.readFile(metaFile);
+    const metaString = metaBuffer.toString('utf-8').trim();
+
+    const actualOutputBuffer = await fs.readFile(actualOutputPath);
+    const actualOutput = actualOutputBuffer.toString('utf-8');
+    console.log(`\tACTUAL OUTPUT: ${actualOutput}`);
+
+    let runStatus = 1;
+    const isActualOutputMatches = expectedOutput.trim() === actualOutput.trim();
+    if(!isActualOutputMatches) runStatus = 2;
+
+    const jsonMetaString = '{"' + metaString.replace(/\n/g, '","').replace(/:/g, '":"').replace(/max-rss/,"maxRss") + '"}';
+    const metaJsonObject = JSON.parse(jsonMetaString);
+    console.log(jsonMetaString);
+    console.info(`TESTCASE ${testId} DONE:`);
+
+    const runTime = metaJsonObject.time;
+    console.log(`\tRUNTIME: ${runTime}`);
+
+    const memoryUsage = metaJsonObject.maxRss;
+    console.log(`\tMEMORY USAGE: ${memoryUsage}`)
+
+    const exitCode = metaJsonObject.exitcode;
+    console.log(`\tEXIT CODE: ${exitCode}`);
+    
+    const status = exitCode.status;
+    
+    if(status)
+    {
+        if(status === 'RE') runStatus = 4;
+        if(status === 'SG') runStatus = 4;
+        if(status === 'TO') runStatus = 6;
+        if(status === 'XX') runStatus = 7;
+    }
+
+    if(memoryUsage > memoryLimit) runStatus = 5;
+
+    console.log(`\tRUN STATUS: ${runStatus}`);
+
+    let errorOutput = '';
+    if(exitCode !== 0)
+        errorOutput = actualOutput
+
+    return {
+        runTime,
+        memoryUsage,
+        runStatus,
+        exitCode,
+        actualOutput,
+        errorOutput,
+        memoryLimit
+    }
 }
 
 const runTestCase = async (testId,boxid, runScript, inputPath, runFile) => {
     const metaFile = `${BOX_DIR_PREFIX}${boxid}/box/run_${testId}.txt`;
     const actualOutputPath = `${BOX_DIR_PREFIX}${boxid}/box/${testId}.out`
-    const runCommand = `isolate -b ${boxid} -p -E PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin -M ${metaFile} -i ${inputPath} -o ${actualOutputPath} --run ${runScript}${runFile}`;
+    const runCommand = `isolate -b ${boxid} -p -E PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin -M ${metaFile} -i ${inputPath} -o ${actualOutputPath} --stderr-to-stdout --run ${runScript}${runFile}`;
     try {
         execSync(runCommand);
         return actualOutputPath;
@@ -104,24 +163,30 @@ const runTestCase = async (testId,boxid, runScript, inputPath, runFile) => {
     }
 }
 
+const judgeSingleTestcase = async (testcase, runScript, boxid, runFile, memoryLimit) => {
 
-const judgeSingleTestcase = async (testcase, runScript, boxid, runFile) => {
-    // populate input files
     const testId = testcase.testId;
     const input = testcase.input;
     const inputPath = await populateInputFile(boxid,testId,input);
-    // run code
+    const expectedOutput = testcase.expectedOutput;
+
     const actualOutputPath = await runTestCase(testId,boxid,runScript,inputPath,runFile);
-    // get actual output
-    // compare with expected output
-    // verify meta result
-    // update test result database
+    const testResult = await verifyTestcase(testId,boxid,expectedOutput,actualOutputPath,memoryLimit);
+
+    console.log(`done judging testcase ${testId} result:`);
+    console.log(testResult);
+    return testResult;
 }
 
-async function judgeSubmission(submissionId,languageId) 
+const getCompileResult = async (submissionId) => {
+    
+}
+
+async function judgeSubmission(submissionId, exerciseId ,languageId) 
 {
     try
-    {
+    {   
+        const exercise = await getExercise(exerciseId);
         const language = await getLanguageExtension(languageId);
         const extension = language.fileExtension;
         console.log("Extension of this submission");
@@ -138,6 +203,7 @@ async function judgeSubmission(submissionId,languageId)
         const testcases = await getTestCases(submissionId);
         console.log("Test cases: ");
         console.log(testcases);
+        if(!testcases || testcases.length === 0) throw new Error('No test case specified');
 
         const randomBoxId = generateRandomBoxId();
         console.log("Box id");
@@ -167,11 +233,26 @@ async function judgeSubmission(submissionId,languageId)
         // compile code
         const compiledFile = await compileSourceCode(submissionId,extension,boxid);
 
+        // run testcases
+        const memoryLimit = exercise.memoryLimit;
 
+        const testResults = [];
+
+        for(const testcase of testcases) {
+            const result = await judgeSingleTestcase(testcase,'./',boxid,compiledFile,memoryLimit);
+            testResults.push(result);
+        }
         
-            
-            
         // clean up
+        try {     
+            execSync(`isolate --cg --cleanup -b ${boxid}`);
+            console.info(`Successfully cleanup box ${boxid}`)
+        }
+        catch(err)
+        {
+            throw new Error(`Cleanup box failed ${err}`)
+        }
+
     }
     catch (err) {
         console.error(err);
@@ -181,8 +262,13 @@ async function judgeSubmission(submissionId,languageId)
 
 
 
-judgeSubmission('40a50118-e207-4672-9a44-7bf0aa51be76',2);
+judgeSubmission('40a50118-e207-4672-9a44-7bf0aa51be76','c7f5f23d-ebdf-4262-b050-97aa5590aa03',2);
 //populateInputFile(759,'8EFA93AD-0DAE-4A6D-9E6D-55777A4645BF','1 2');
 
 //runTestCase('8EFA93AD-0DAE-4A6D-9E6D-55777A4645BF',759,'./40a50118-e207-4672-9a44-7bf0aa51be76','8EFA93AD-0DAE-4A6D-9E6D-55777A4645BF.in','40a50118-e207-4672-9a44-7bf0aa51be76');
 
+//verifyTestcase('8EFA93AD-0DAE-4A6D-9E6D-55777A4645BF',759,'3',`${BOX_DIR_PREFIX}759/box/8EFA93AD-0DAE-4A6D-9E6D-55777A4645BF.out`,12800)
+
+//getExercise('C7F5F23D-EBDF-4262-B050-97AA5590AA03');
+
+getTestCases('40a50118-e207-4672-9a44-7bf0aa51be76');
