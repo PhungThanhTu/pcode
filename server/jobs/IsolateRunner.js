@@ -82,6 +82,14 @@ const populateInputFile = async (boxid,testId,input) => {
     }
 }
 
+const verifyTestcase = async (testId, metaFile, expectedOutput, actualOutputPath) => {
+    // run time
+    // memory usage
+    // exit code 
+    // actual stdout
+    // stderr
+}
+
 const runTestCase = async (testId,boxid, runScript, inputPath, runFile) => {
     const metaFile = `${BOX_DIR_PREFIX}${boxid}/box/run_${testId}.txt`;
     const actualOutputPath = `${BOX_DIR_PREFIX}${boxid}/box/${testId}.out`
