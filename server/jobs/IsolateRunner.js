@@ -223,25 +223,18 @@ module.exports = {
             const exercise = await getExercise(exerciseId);
             const language = await getLanguageExtension(languageId);
             const extension = language.fileExtension;
-            console.log("Extension of this submission");
-            console.log(extension);
+
             if(!language)
             {
                 throw new Error("SQL Connection Error")
             }
 
             const sourceCode = await getSourceCode(submissionId,languageId);
-            console.log("Source code of this submission");
-            console.log(sourceCode);
-
             const testcases = await getTestCases(submissionId);
-            console.log("Test cases: ");
-            console.log(testcases);
+
             if(!testcases || testcases.length === 0) throw new Error('No test case specified');
 
             const randomBoxId = generateRandomBoxId();
-            console.log("Box id");
-            console.log(randomBoxId);
 
             while(true) {
                 const boxIsExists = await checkBoxAlreadyExists(randomBoxId);
@@ -251,8 +244,7 @@ module.exports = {
                     break;
             }
             const boxid = randomBoxId;
-            console.log(`found available box : ${boxid}`)    
-            // init box
+
             try {     
                 execSync(`isolate --cg --init -b ${boxid}`);
                 console.info(`Successfully initialized a box at path ${BOX_DIR_PREFIX}${boxid}`)
@@ -262,28 +254,21 @@ module.exports = {
                 throw new Error(`Init box failed ${err}`)
             }
             try {
-            // populate files (source code, input file)
             const sourceCodePath = `${BOX_DIR_PREFIX}${boxid}/box/${submissionId}.${extension}`;
-            await writeSourceCode(sourceCodePath,sourceCode);
-            // compile code
-            const compiledFile = await compileSourceCode(submissionId,extension,boxid);
 
+            await writeSourceCode(sourceCodePath,sourceCode);
+            const compiledFile = await compileSourceCode(submissionId,extension,boxid);
             const compileResult = await verifyCompileResult(submissionId,boxid);
 
-            console.log('Compile Result: ');
-            console.log(compileResult);
-
-
-            // run testcases
             const memoryLimit = exercise.memoryLimit;
             const timeLimit = exercise.runtimeLimit/ 1000;
 
             const testResults = [];
-
             for(const testcase of testcases) {
                 const result = await judgeSingleTestcase(testcase,'./',boxid,compiledFile,timeLimit,memoryLimit,compileResult);
                 testResults.push(result);
             }
+
             console.log('ALL TEST CASES HAS BEEN JUDGED: ');
             console.log(testResults);
             }
@@ -291,7 +276,6 @@ module.exports = {
                 throw new Error(`Judging failed ${err}`);
             }
             finally {
-                // clean up
                 try {     
                     execSync(`isolate --cg --cleanup -b ${boxid}`);
                     console.info(`Successfully cleanup box ${boxid}`)
