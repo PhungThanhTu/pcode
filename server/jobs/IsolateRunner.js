@@ -113,7 +113,7 @@ const verifyTestcase = async (testId, boxid, expectedOutput, actualOutputPath, m
 
     const memoryUsage = metaJsonObject.maxRss;
 
-    const exitCode = metaJsonObject.exitcode;
+    const exitCode = metaJsonObject.exitcode || -1;
     
     let status = metaJsonObject.status;
     
@@ -147,21 +147,24 @@ const verifyTestcase = async (testId, boxid, expectedOutput, actualOutputPath, m
     }
 }
 
-const runTestCase = async (testId,boxid, runScript, inputPath, runFile) => {
+const runTestCase = async (testId,boxid, runScript, inputPath, runFile, timeLimit) => {
     const metaFile = `${BOX_DIR_PREFIX}${boxid}/box/run_${testId}.txt`;
     const actualOutputPath = `${BOX_DIR_PREFIX}${boxid}/box/${testId}.out`
-    const runCommand = `isolate -b ${boxid} -p -E PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin -M ${metaFile} -i ${inputPath} -o ${actualOutputPath} --stderr-to-stdout --run ${runScript}${runFile}`;
+    const runCommand = `isolate -b ${boxid} --time ${timeLimit} -p -E PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin -M ${metaFile} -i ${inputPath} -o ${actualOutputPath} --stderr-to-stdout --run ${runScript}${runFile}`;
     try {
+        console.log(`Judging test case ${testId}`);
         execSync(runCommand);
-        return actualOutputPath;
     }
     catch (err)
     {
-        throw new Error(`Cannot run the source code in test case ${testId}`)
+        console.log(`Cannot run the source code in test case ${testId}`);
+    }
+    finally {
+        return actualOutputPath;
     }
 }
 
-const judgeSingleTestcase = async (testcase, runScript, boxid, runFile, memoryLimit, compileResult) => {
+const judgeSingleTestcase = async (testcase, runScript, boxid, runFile, timeLimit, memoryLimit, compileResult) => {
 
     const testId = testcase.testId;
     const input = testcase.input;
@@ -169,10 +172,12 @@ const judgeSingleTestcase = async (testcase, runScript, boxid, runFile, memoryLi
     const expectedOutput = testcase.expectedOutput;
     if(compileResult.exitCode == 0)
     {
-        const actualOutputPath = await runTestCase(testId,boxid,runScript,inputPath,runFile);
+        console.log('No complile error');
+        const actualOutputPath = await runTestCase(testId,boxid,runScript,inputPath,runFile,timeLimit);
         const testResult = await verifyTestcase(testId,boxid,expectedOutput,actualOutputPath,memoryLimit);
         return testResult;
     }
+
     return {
         runStatus: 3,
         exitCode: -1,
@@ -246,7 +251,7 @@ module.exports = {
                     break;
             }
             const boxid = randomBoxId;
-            console.log(`found available box : ${boxid}`)     
+            console.log(`found available box : ${boxid}`)    
             // init box
             try {     
                 execSync(`isolate --cg --init -b ${boxid}`);
@@ -256,6 +261,7 @@ module.exports = {
             {
                 throw new Error(`Init box failed ${err}`)
             }
+            try {
             // populate files (source code, input file)
             const sourceCodePath = `${BOX_DIR_PREFIX}${boxid}/box/${submissionId}.${extension}`;
             await writeSourceCode(sourceCodePath,sourceCode);
@@ -270,31 +276,38 @@ module.exports = {
 
             // run testcases
             const memoryLimit = exercise.memoryLimit;
+            const timeLimit = exercise.runtimeLimit/ 1000;
 
             const testResults = [];
 
             for(const testcase of testcases) {
-                const result = await judgeSingleTestcase(testcase,'./',boxid,compiledFile,memoryLimit,compileResult);
+                const result = await judgeSingleTestcase(testcase,'./',boxid,compiledFile,timeLimit,memoryLimit,compileResult);
                 testResults.push(result);
             }
             console.log('ALL TEST CASES HAS BEEN JUDGED: ');
             console.log(testResults);
-            // clean up
-            try {     
-                execSync(`isolate --cg --cleanup -b ${boxid}`);
-                console.info(`Successfully cleanup box ${boxid}`)
             }
-            catch(err)
-            {
-                throw new Error(`Cleanup box failed ${err}`)
+            catch(err) {
+                throw new Error(`Judging failed ${err}`);
             }
-
+            finally {
+                // clean up
+                try {     
+                    execSync(`isolate --cg --cleanup -b ${boxid}`);
+                    console.info(`Successfully cleanup box ${boxid}`)
+                }
+                catch(err)
+                {
+                    console.log(`Cleanup box failed ${err}`)
+                }
+            }
         }
         catch (err) {
             console.error(err);
-        }
+        }          
     }
 }
+
 
 
 

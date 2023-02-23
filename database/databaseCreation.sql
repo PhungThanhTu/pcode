@@ -337,3 +337,23 @@ go
 
 
 update [dbo].[Exercise] set memoryLimit = 12800 where id = 'c7f5f23d-ebdf-4262-b050-97aa5590aa03'
+
+update [dbo].[SubmissionSourceCode] set sourceCode = N'#include<iostream>
+
+int SumOfTwoIntergers(int a, int b) {
+  while(true){}
+}
+
+int main(){
+    int a,b;
+    std::cin > a >> b;
+    std::cout << SumOfTwoIntergers(a,b);
+    return 0;
+}'
+where submissionId = '40a50118-e207-4672-9a44-7bf0aa51be76'
+
+select * from [dbo].[SubmissionSourceCode]
+
+select * from [dbo].[Exercise]
+
+update [dbo].[Exercise] set runtimeLimit = 2000 
