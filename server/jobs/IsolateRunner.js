@@ -69,14 +69,15 @@ const writeSourceCode = async (path,sourceCode) => {
 }
 
 const compileSourceCode = async (submissionId,extension,boxid) => {
-    const compileScript =  `-- /usr/bin/g++ -o ${submissionId} ${submissionId}.${extension}`;
+    const compileScript =  `-- /usr/bin/g++ -Wfatal-errors -w -o ${submissionId} ${submissionId}.${extension}`;
+    const compileOutput = `${BOX_DIR_PREFIX}${boxid}/box/compile_${submissionId}.out`;
     const compileMetaName = `${BOX_DIR_PREFIX}${boxid}/box/compile_${submissionId}.txt`;
     try {
-        execSync(`isolate -b ${boxid} --mem 128000 --time 2 -p -E PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin -M ${compileMetaName} --run ${compileScript}`);
+        execSync(`isolate -b ${boxid} --mem 128000 --time 2 -p -E PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin -o ${compileOutput} --stderr-to-stdout -M ${compileMetaName} --run ${compileScript}`);
         return submissionId;
     }
     catch (err) {
-        throw new Error(`Compile filed with error ${err}`);
+        console.log('Compile failed');
     }
 
 }
@@ -100,7 +101,6 @@ const verifyTestcase = async (testId, boxid, expectedOutput, actualOutputPath, m
 
     const actualOutputBuffer = await fs.readFile(actualOutputPath);
     const actualOutput = actualOutputBuffer.toString('utf-8');
-    console.log(`\tACTUAL OUTPUT: ${actualOutput}`);
 
     let runStatus = 1;
     const isActualOutputMatches = expectedOutput.trim() === actualOutput.trim();
@@ -108,19 +108,14 @@ const verifyTestcase = async (testId, boxid, expectedOutput, actualOutputPath, m
 
     const jsonMetaString = '{"' + metaString.replace(/\n/g, '","').replace(/:/g, '":"').replace(/max-rss/,"maxRss") + '"}';
     const metaJsonObject = JSON.parse(jsonMetaString);
-    console.log(jsonMetaString);
-    console.info(`TESTCASE ${testId} DONE:`);
 
     const runTime = metaJsonObject.time;
-    console.log(`\tRUNTIME: ${runTime}`);
 
     const memoryUsage = metaJsonObject.maxRss;
-    console.log(`\tMEMORY USAGE: ${memoryUsage}`)
 
     const exitCode = metaJsonObject.exitcode;
-    console.log(`\tEXIT CODE: ${exitCode}`);
     
-    const status = exitCode.status;
+    let status = metaJsonObject.status;
     
     if(status)
     {
@@ -130,9 +125,10 @@ const verifyTestcase = async (testId, boxid, expectedOutput, actualOutputPath, m
         if(status === 'XX') runStatus = 7;
     }
 
-    if(memoryUsage > memoryLimit) runStatus = 5;
+    if(!status)
+        status = 'RN';
 
-    console.log(`\tRUN STATUS: ${runStatus}`);
+    if(memoryUsage > memoryLimit) runStatus = 5;
 
     let errorOutput = '';
     if(exitCode !== 0)
@@ -144,8 +140,10 @@ const verifyTestcase = async (testId, boxid, expectedOutput, actualOutputPath, m
         runStatus,
         exitCode,
         actualOutput,
+        expectedOutput,
         errorOutput,
-        memoryLimit
+        memoryLimit,
+        status
     }
 }
 
@@ -163,112 +161,142 @@ const runTestCase = async (testId,boxid, runScript, inputPath, runFile) => {
     }
 }
 
-const judgeSingleTestcase = async (testcase, runScript, boxid, runFile, memoryLimit) => {
+const judgeSingleTestcase = async (testcase, runScript, boxid, runFile, memoryLimit, compileResult) => {
 
     const testId = testcase.testId;
     const input = testcase.input;
     const inputPath = await populateInputFile(boxid,testId,input);
     const expectedOutput = testcase.expectedOutput;
-
-    const actualOutputPath = await runTestCase(testId,boxid,runScript,inputPath,runFile);
-    const testResult = await verifyTestcase(testId,boxid,expectedOutput,actualOutputPath,memoryLimit);
-
-    console.log(`done judging testcase ${testId} result:`);
-    console.log(testResult);
-    return testResult;
-}
-
-const getCompileResult = async (submissionId) => {
-    
-}
-
-async function judgeSubmission(submissionId, exerciseId ,languageId) 
-{
-    try
-    {   
-        const exercise = await getExercise(exerciseId);
-        const language = await getLanguageExtension(languageId);
-        const extension = language.fileExtension;
-        console.log("Extension of this submission");
-        console.log(extension);
-        if(!language)
-        {
-            throw new Error("SQL Connection Error")
-        }
-
-        const sourceCode = await getSourceCode(submissionId,languageId);
-        console.log("Source code of this submission");
-        console.log(sourceCode);
-
-        const testcases = await getTestCases(submissionId);
-        console.log("Test cases: ");
-        console.log(testcases);
-        if(!testcases || testcases.length === 0) throw new Error('No test case specified');
-
-        const randomBoxId = generateRandomBoxId();
-        console.log("Box id");
-        console.log(randomBoxId);
-
-        while(true) {
-            const boxIsExists = await checkBoxAlreadyExists(randomBoxId);
-            if(boxIsExists)
-                randomBoxId = generateRandomBoxId();
-            else
-                break;
-        }
-        const boxid = randomBoxId;
-        console.log(`found available box : ${boxid}`)     
-        // init box
-        try {     
-            execSync(`isolate --cg --init -b ${boxid}`);
-            console.info(`Successfully initialized a box at path ${BOX_DIR_PREFIX}${boxid}`)
-        }
-        catch(err)
-        {
-            throw new Error(`Init box failed ${err}`)
-        }
-        // populate files (source code, input file)
-        const sourceCodePath = `${BOX_DIR_PREFIX}${boxid}/box/${submissionId}.${extension}`;
-        await writeSourceCode(sourceCodePath,sourceCode);
-        // compile code
-        const compiledFile = await compileSourceCode(submissionId,extension,boxid);
-
-        // run testcases
-        const memoryLimit = exercise.memoryLimit;
-
-        const testResults = [];
-
-        for(const testcase of testcases) {
-            const result = await judgeSingleTestcase(testcase,'./',boxid,compiledFile,memoryLimit);
-            testResults.push(result);
-        }
-        
-        // clean up
-        try {     
-            execSync(`isolate --cg --cleanup -b ${boxid}`);
-            console.info(`Successfully cleanup box ${boxid}`)
-        }
-        catch(err)
-        {
-            throw new Error(`Cleanup box failed ${err}`)
-        }
-
+    if(compileResult.exitCode == 0)
+    {
+        const actualOutputPath = await runTestCase(testId,boxid,runScript,inputPath,runFile);
+        const testResult = await verifyTestcase(testId,boxid,expectedOutput,actualOutputPath,memoryLimit);
+        return testResult;
     }
-    catch (err) {
-        console.error(err);
+    return {
+        runStatus: 3,
+        exitCode: -1,
+        runTime: 0,
+        memoryUsage: 0,
+        actualOutput: compileResult.actualOutput
+    }
+
+}
+
+const verifyCompileResult = async (submissionId, boxid) => {
+    const compileMetaPath = `${BOX_DIR_PREFIX}${boxid}/box/compile_${submissionId}.txt`;
+    const compileOutput = `${BOX_DIR_PREFIX}${boxid}/box/compile_${submissionId}.out`;
+    const compiledMetaBuffer = await fs.readFile(compileMetaPath);
+    const outputBuffer = await fs.readFile(compileOutput);
+    const outputString = outputBuffer.toString('utf-8');
+    const pattern = new RegExp(submissionId,'g');
+    const anonymizedOutputString = outputString.replace(pattern,'main');
+    const compliedMetaString = compiledMetaBuffer.toString('utf-8').trim();
+
+    const metaJsonString = '{"' + compliedMetaString.replace(/\n/g, '","').replace(/:/g, '":"').replace(/max-rss/,"maxRss") + '"}';
+    const metaJsonObject = JSON.parse(metaJsonString);
+
+    const runTime = metaJsonObject.time;
+
+    const memoryUsage = metaJsonObject.maxRss;
+
+    const exitCode = metaJsonObject.exitcode;
+
+    return {
+        runTime,
+        memoryUsage,
+        exitCode,
+        actualOutput: anonymizedOutputString
     }
 }
 
+module.exports = { 
+    judgeSubmission: async (submissionId, exerciseId ,languageId) =>
+    {
+        try
+        {   
+            const exercise = await getExercise(exerciseId);
+            const language = await getLanguageExtension(languageId);
+            const extension = language.fileExtension;
+            console.log("Extension of this submission");
+            console.log(extension);
+            if(!language)
+            {
+                throw new Error("SQL Connection Error")
+            }
+
+            const sourceCode = await getSourceCode(submissionId,languageId);
+            console.log("Source code of this submission");
+            console.log(sourceCode);
+
+            const testcases = await getTestCases(submissionId);
+            console.log("Test cases: ");
+            console.log(testcases);
+            if(!testcases || testcases.length === 0) throw new Error('No test case specified');
+
+            const randomBoxId = generateRandomBoxId();
+            console.log("Box id");
+            console.log(randomBoxId);
+
+            while(true) {
+                const boxIsExists = await checkBoxAlreadyExists(randomBoxId);
+                if(boxIsExists)
+                    randomBoxId = generateRandomBoxId();
+                else
+                    break;
+            }
+            const boxid = randomBoxId;
+            console.log(`found available box : ${boxid}`)     
+            // init box
+            try {     
+                execSync(`isolate --cg --init -b ${boxid}`);
+                console.info(`Successfully initialized a box at path ${BOX_DIR_PREFIX}${boxid}`)
+            }
+            catch(err)
+            {
+                throw new Error(`Init box failed ${err}`)
+            }
+            // populate files (source code, input file)
+            const sourceCodePath = `${BOX_DIR_PREFIX}${boxid}/box/${submissionId}.${extension}`;
+            await writeSourceCode(sourceCodePath,sourceCode);
+            // compile code
+            const compiledFile = await compileSourceCode(submissionId,extension,boxid);
+
+            const compileResult = await verifyCompileResult(submissionId,boxid);
+
+            console.log('Compile Result: ');
+            console.log(compileResult);
+
+
+            // run testcases
+            const memoryLimit = exercise.memoryLimit;
+
+            const testResults = [];
+
+            for(const testcase of testcases) {
+                const result = await judgeSingleTestcase(testcase,'./',boxid,compiledFile,memoryLimit,compileResult);
+                testResults.push(result);
+            }
+            console.log('ALL TEST CASES HAS BEEN JUDGED: ');
+            console.log(testResults);
+            // clean up
+            try {     
+                execSync(`isolate --cg --cleanup -b ${boxid}`);
+                console.info(`Successfully cleanup box ${boxid}`)
+            }
+            catch(err)
+            {
+                throw new Error(`Cleanup box failed ${err}`)
+            }
+
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
+}
 
 
 
-judgeSubmission('40a50118-e207-4672-9a44-7bf0aa51be76','c7f5f23d-ebdf-4262-b050-97aa5590aa03',2);
-//populateInputFile(759,'8EFA93AD-0DAE-4A6D-9E6D-55777A4645BF','1 2');
 
-//runTestCase('8EFA93AD-0DAE-4A6D-9E6D-55777A4645BF',759,'./40a50118-e207-4672-9a44-7bf0aa51be76','8EFA93AD-0DAE-4A6D-9E6D-55777A4645BF.in','40a50118-e207-4672-9a44-7bf0aa51be76');
-
-//verifyTestcase('8EFA93AD-0DAE-4A6D-9E6D-55777A4645BF',759,'3',`${BOX_DIR_PREFIX}759/box/8EFA93AD-0DAE-4A6D-9E6D-55777A4645BF.out`,12800)
-
-//getExercise('C7F5F23D-EBDF-4262-B050-97AA5590AA03');
-
-getTestCases('40a50118-e207-4672-9a44-7bf0aa51be76');
+module.exports.judgeSubmission('40a50118-e207-4672-9a44-7bf0aa51be76','c7f5f23d-ebdf-4262-b050-97aa5590aa03',2);
