@@ -225,6 +225,12 @@ create procedure GetTestCasesBySubmissionId
         where s.id = @Id
     GO
 
+create procedure UpsertTestCaseResults
+    @Json nvarchar(max)
+    AS
+
+    go
+
 EXEC GetTestCasesBySubmissionId @Id = '40a50118-e207-4672-9a44-7bf0aa51be76'
 -- cleanup procedures
 drop procedure RegisterPlpUser
@@ -341,12 +347,12 @@ update [dbo].[Exercise] set memoryLimit = 12800 where id = 'c7f5f23d-ebdf-4262-b
 update [dbo].[SubmissionSourceCode] set sourceCode = N'#include<iostream>
 
 int SumOfTwoIntergers(int a, int b) {
-  while(true){}
+  return a + b;
 }
 
 int main(){
     int a,b;
-    std::cin > a >> b;
+    std::cin >> a >> b;
     std::cout << SumOfTwoIntergers(a,b);
     return 0;
 }'
@@ -357,3 +363,80 @@ select * from [dbo].[SubmissionSourceCode]
 select * from [dbo].[Exercise]
 
 update [dbo].[Exercise] set runtimeLimit = 2000 
+
+
+
+declare @submissionId UNIQUEIDENTIFIER
+set @submissionId = '40a50118-e207-4672-9a44-7bf0aa51be76'
+declare @programmingLanguageId int
+set @programmingLanguageId = 2
+declare @json nvarchar(max) 
+set @json = N'[
+    {
+        "testId":"8EFA93AD-0DAE-4A6D-9E6D-55777A4645BF",
+        "runTime":0.009,
+        "memoryUsage":3080,
+        "runStatus":1,
+        "exitCode":0,
+        "actualOutput":"3",
+        "expectedOutput":"3",
+        "errorOutput":"",
+        "memoryLimit":12800,
+        "status":
+        "RN"
+    },
+    {
+        "testId":"AC3E0E13-2C50-44FC-A274-FB73FB4986FA",
+        "runTime":0.007,
+        "memoryUsage":3084,
+        "runStatus":1,
+        "exitCode":0,
+        "actualOutput":"-1",
+        "expectedOutput":"-1",
+        "errorOutput":"",
+        "memoryLimit":12800,
+        "status":"RN"
+    }
+]'
+
+MERGE into [dbo].[SubmissionTestResult]
+AS DestinationTable
+    USING
+    (
+        select submissionId = @submissionId, programmingLanguageId = @programmingLanguageId, *  from openjson(@json) with 
+        (
+            testId UNIQUEIDENTIFIER '$.testId',
+            runTime float '$.runTime',
+            memoryUsage int '$.memoryUsage',
+            runStatus int '$.runStatus',
+            exitCode int '$.exitCode',
+            actualStdout nvarchar(max) '$.actualOutput',
+            stdErr nvarchar(max) '$.errorOutput'
+        )
+    ) AS UpsertingData
+ON DestinationTable.testId = UpsertingData.testId 
+    AND DestinationTable.submissionId = UpsertingData.submissionId 
+    AND DestinationTable.programmingLanguageId = UpsertingData.programmingLanguageId 
+WHEN MATCHED THEN
+    UPDATE SET
+        DestinationTable.runTime = UpsertingData.runTime,
+        DestinationTable.memoryUsage = UpsertingData.memoryUsage,
+        DestinationTable.runStatus = UpsertingData.runStatus,
+        DestinationTable.exitCode = UpsertingData.exitCode,
+        DestinationTable.actualStdout = UpsertingData.actualStdout,
+        DestinationTable.stdErr = UpsertingData.stdErr
+WHEN NOT MATCHED THEN
+    INSERT (submissionId,testId, programmingLanguageId ,runTime,memoryUsage,runStatus,exitCode,actualStdout,stdErr)
+    VALUES (
+    UpsertingData.submissionId,
+    UpsertingData.testId,
+    UpsertingData.programmingLanguageId,
+    UpsertingData.runTime,
+    UpsertingData.memoryUsage,
+    UpsertingData.runStatus,
+    UpsertingData.exitCode,
+    UpsertingData.actualStdout, 
+    UpsertingData.stdErr
+    );
+
+select * from [dbo].[SubmissionTestResult]

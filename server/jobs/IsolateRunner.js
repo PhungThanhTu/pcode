@@ -1,4 +1,4 @@
-const { exec,execSync } = require('child_process');
+const { execSync } = require('child_process');
 const sql = require('mssql');
 const sqlConfig = require('../configs/mssqlConfig');
 const fs = require('fs/promises')
@@ -109,11 +109,11 @@ const verifyTestcase = async (testId, boxid, expectedOutput, actualOutputPath, m
     const jsonMetaString = '{"' + metaString.replace(/\n/g, '","').replace(/:/g, '":"').replace(/max-rss/,"maxRss") + '"}';
     const metaJsonObject = JSON.parse(jsonMetaString);
 
-    const runTime = metaJsonObject.time;
+    const runTime = Number(metaJsonObject.time);
 
-    const memoryUsage = metaJsonObject.maxRss;
+    const memoryUsage = Number(metaJsonObject.maxRss);
 
-    const exitCode = metaJsonObject.exitcode || -1;
+    const exitCode = Number(metaJsonObject.exitcode);
     
     let status = metaJsonObject.status;
     
@@ -135,6 +135,7 @@ const verifyTestcase = async (testId, boxid, expectedOutput, actualOutputPath, m
         errorOutput = actualOutput
 
     return {
+        testId,
         runTime,
         memoryUsage,
         runStatus,
@@ -170,7 +171,7 @@ const judgeSingleTestcase = async (testcase, runScript, boxid, runFile, timeLimi
     const input = testcase.input;
     const inputPath = await populateInputFile(boxid,testId,input);
     const expectedOutput = testcase.expectedOutput;
-    if(compileResult.exitCode == 0)
+    if(compileResult.exitCode === 0)
     {
         console.log('No complile error');
         const actualOutputPath = await runTestCase(testId,boxid,runScript,inputPath,runFile,timeLimit);
@@ -201,11 +202,11 @@ const verifyCompileResult = async (submissionId, boxid) => {
     const metaJsonString = '{"' + compliedMetaString.replace(/\n/g, '","').replace(/:/g, '":"').replace(/max-rss/,"maxRss") + '"}';
     const metaJsonObject = JSON.parse(metaJsonString);
 
-    const runTime = metaJsonObject.time;
+    const runTime = Number(metaJsonObject.time);
 
-    const memoryUsage = metaJsonObject.maxRss;
+    const memoryUsage = Number(metaJsonObject.maxRss);
 
-    const exitCode = metaJsonObject.exitcode;
+    const exitCode = Number(metaJsonObject.exitcode);
 
     return {
         runTime,
@@ -270,7 +271,7 @@ module.exports = {
             }
 
             console.log('ALL TEST CASES HAS BEEN JUDGED: ');
-            console.log(testResults);
+            console.log(JSON.stringify(testResults));
             }
             catch(err) {
                 throw new Error(`Judging failed ${err}`);
