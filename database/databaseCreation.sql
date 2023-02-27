@@ -280,7 +280,7 @@ declare @jsonJudgeData nvarchar(max)= N'[
         "runTime":0.009,
         "memoryUsage":3080,
         "runStatus":1,
-        "exitCode":0,
+        "exitCode":4,
         "actualOutput":"3",
         "expectedOutput":"3",
         "errorOutput":"",
@@ -293,7 +293,7 @@ declare @jsonJudgeData nvarchar(max)= N'[
         "runTime":0.007,
         "memoryUsage":3084,
         "runStatus":1,
-        "exitCode":0,
+        "exitCode":4,
         "actualOutput":"-1",
         "expectedOutput":"-1",
         "errorOutput":"",
@@ -370,7 +370,7 @@ VALUES
 ('40a50118-e207-4672-9a44-7bf0aa51be76',2,N'#include<iostream>
 
 int SumOfTwoIntergers(int a, int b) {
-   return a + b;
+   return a - b;
 }
 
 int main(){
@@ -429,7 +429,7 @@ int main(){
     return 0;
 }'
 where submissionId = '40a50118-e207-4672-9a44-7bf0aa51be76'
-
+select * from SubmissionTestResult
 select * from [dbo].[SubmissionSourceCode]
 
 select * from [dbo].[Exercise]

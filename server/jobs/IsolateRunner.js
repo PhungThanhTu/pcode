@@ -16,6 +16,18 @@ const getExercise = async (id) => {
     return result;
 }
 
+const updateSubmissionTestResult = async ( jsonJudgeData, submissionId, programmingLanguageId) => {
+    const command = "UpdateSubmissionResult";
+
+    const pool = await sql.connect(sqlConfig);
+    const request = await pool.request()
+        .input('jsonJudgedata',sql.NVarChar, jsonJudgeData)
+        .input('submissionId',sql.UniqueIdentifier,submissionId)
+        .input('programmingLanguageId',sql.Int, programmingLanguageId)
+        .execute(command);
+    pool.close();
+}
+
 const getLanguageExtension = async (id) => {
     const query = "select * from [dbo].[ProgrammingLanguage] where id = @id";
 
@@ -180,6 +192,7 @@ const judgeSingleTestcase = async (testcase, runScript, boxid, runFile, timeLimi
     }
 
     return {
+        testId,
         runStatus: 3,
         exitCode: -1,
         runTime: 0,
@@ -271,7 +284,16 @@ module.exports = {
             }
 
             console.log('ALL TEST CASES HAS BEEN JUDGED: ');
-            console.log(JSON.stringify(testResults));
+            const jsonTestResult = JSON.stringify(testResults);
+            console.log(jsonTestResult);
+
+            try {
+                await updateSubmissionTestResult(jsonTestResult,submissionId,languageId);
+            }
+            catch (err) {
+                throw new Error(`Couldn't update test result to db ${err}`);
+            }
+
             }
             catch(err) {
                 throw new Error(`Judging failed ${err}`);
