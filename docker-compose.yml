@@ -13,9 +13,9 @@ services:
     volumes:
       - mssql:/var/opt/mssql
     ports:
-          - "1433:1433"                     # cổng kết nối
+          - "1400:1433"                     # cổng kết nối
     expose:
-      - 1433
+      - 1400
   server:
     container_name: plp_server
     privileged: true
