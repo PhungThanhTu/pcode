@@ -217,38 +217,92 @@ create procedure UpdateAvatar
     GO
 go
 ---- JUDGE DATABASE
-create procedure CreateCourse
-as
-go
+create procedure GetTestCasesBySubmissionId 
+    @Id UNIQUEIDENTIFIER
+    AS
+        select m.id as testId, m.input, m.expectedOutput, m.scoreWeight from [dbo].[MetaTestCase] m join [dbo].[Exercise] e on m.exercise = e.id
+        join [dbo].[Submission] s on s.exerciseId = e.id
+        where s.id = @Id
+    GO
 
-create procedure CreateExercise
-AS
-go
+    CREATE PROCEDURE UpdateSubmissionResult
+    @jsonJudgeData nvarchar(max),
+    @submissionId uniqueidentifier,
+    @programmingLanguageId INT
+    AS
+        MERGE into [dbo].[SubmissionTestResult]
+        AS DestinationTable
+            USING
+            (
+                select submissionId = @submissionId, programmingLanguageId = @programmingLanguageId, *  from openjson(@jsonJudgeData) with 
+                (
+                    testId UNIQUEIDENTIFIER '$.testId',
+                    runTime float '$.runTime',
+                    memoryUsage int '$.memoryUsage',
+                    runStatus int '$.runStatus',
+                    exitCode int '$.exitCode',
+                    actualStdout nvarchar(max) '$.actualOutput',
+                    stdErr nvarchar(max) '$.errorOutput'
+                )
+            ) AS UpsertingData
+        ON DestinationTable.testId = UpsertingData.testId 
+            AND DestinationTable.submissionId = UpsertingData.submissionId 
+            AND DestinationTable.programmingLanguageId = UpsertingData.programmingLanguageId 
+        WHEN MATCHED THEN
+            UPDATE SET
+                DestinationTable.runTime = UpsertingData.runTime,
+                DestinationTable.memoryUsage = UpsertingData.memoryUsage,
+                DestinationTable.runStatus = UpsertingData.runStatus,
+                DestinationTable.exitCode = UpsertingData.exitCode,
+                DestinationTable.actualStdout = UpsertingData.actualStdout,
+                DestinationTable.stdErr = UpsertingData.stdErr
+        WHEN NOT MATCHED THEN
+            INSERT (submissionId,testId, programmingLanguageId ,runTime,memoryUsage,runStatus,exitCode,actualStdout,stdErr)
+            VALUES (
+            UpsertingData.submissionId,
+            UpsertingData.testId,
+            UpsertingData.programmingLanguageId,
+            UpsertingData.runTime,
+            UpsertingData.memoryUsage,
+            UpsertingData.runStatus,
+            UpsertingData.exitCode,
+            UpsertingData.actualStdout, 
+            UpsertingData.stdErr
+            );
+    GO
 
-create procedure CreateTestCase
-AS
-GO
 
-create procedure CreateSubmission
-AS
-GO
-
-create procedure UpsertSubmissionTestResult
-AS
-go
-
-create procedure DeleteSubmissionTestResult
-AS
-go
-
-create procedure DeleteSubmission
-AS
-go
-
-create procedure DeleteExercise
-AS
-go
-
+declare @submissionId UNIQUEIDENTIFIER = '40a50118-e207-4672-9a44-7bf0aa51be76'
+declare @programmingLanguageId int = 2
+declare @jsonJudgeData nvarchar(max)= N'[
+    {
+        "testId":"8EFA93AD-0DAE-4A6D-9E6D-55777A4645BF",
+        "runTime":0.009,
+        "memoryUsage":3080,
+        "runStatus":1,
+        "exitCode":4,
+        "actualOutput":"3",
+        "expectedOutput":"3",
+        "errorOutput":"",
+        "memoryLimit":12800,
+        "status":
+        "RN"
+    },
+    {
+        "testId":"AC3E0E13-2C50-44FC-A274-FB73FB4986FA",
+        "runTime":0.007,
+        "memoryUsage":3084,
+        "runStatus":1,
+        "exitCode":4,
+        "actualOutput":"-1",
+        "expectedOutput":"-1",
+        "errorOutput":"",
+        "memoryLimit":12800,
+        "status":"RN"
+    }
+]'
+EXEC UpdateSubmissionResult @jsonJudgeData, @submissionId, @programmingLanguageId;
+EXEC GetTestCasesBySubmissionId @Id = '40a50118-e207-4672-9a44-7bf0aa51be76'
 -- cleanup procedures
 drop procedure RegisterPlpUser
 drop procedure UpdateRefreshToken
@@ -258,6 +312,8 @@ drop procedure UpdatePassword
 drop procedure UpdateAvatar
 drop procedure GetUserById
 
+drop procedure GetTestCasesBySubmissionId
+drop procedure UpdateSubmissionResult
     
 -- TEST
 select * from SubmissionTestResult
@@ -295,6 +351,8 @@ int main(){
 insert into [dbo].[MetaTestCase] 
 (id,exercise,input,expectedOutput,scoreWeight)
 values
+('ac3e0e13-2c50-44fc-a274-fb73fb4986fa','c7f5f23d-ebdf-4262-b050-97aa5590aa03','2 -3','-1',1),
+
 ('8efa93ad-0dae-4a6d-9e6d-55777a4645bf','c7f5f23d-ebdf-4262-b050-97aa5590aa03','1 2','3',1)
 
     -- insert Submission
@@ -312,7 +370,7 @@ VALUES
 ('40a50118-e207-4672-9a44-7bf0aa51be76',2,N'#include<iostream>
 
 int SumOfTwoIntergers(int a, int b) {
-   return a + b;
+   return a - b;
 }
 
 int main(){
@@ -353,6 +411,31 @@ values
 ('40a50118-e207-4672-9a44-7bf0aa51be76','8efa93ad-0dae-4a6d-9e6d-55777a4645bf',2,0),
 ('137bc48a-fa98-4167-abc4-889f61a2e2db','8efa93ad-0dae-4a6d-9e6d-55777a4645bf',2,0),
 ('9f4d8da1-a41a-406e-a7c4-64e4e67f1696','8efa93ad-0dae-4a6d-9e6d-55777a4645bf',2,0)
+go
 
 
-select s.id as SubmissionId, e.id as ExerciseId from [dbo].[Submission] s join [dbo].[Exercise] e on s.exerciseId = e.id
+update [dbo].[Exercise] set memoryLimit = 12800 where id = 'c7f5f23d-ebdf-4262-b050-97aa5590aa03'
+
+update [dbo].[SubmissionSourceCode] set sourceCode = N'#include<iostream>
+
+int SumOfTwoIntergers(int a, int b) {
+  return a + b;
+}
+
+int main(){
+    int a,b;
+    std::cin >> a >> b;
+    std::cout << SumOfTwoIntergers(a,b);
+    return 0;
+}'
+where submissionId = '40a50118-e207-4672-9a44-7bf0aa51be76'
+select * from SubmissionTestResult
+select * from [dbo].[SubmissionSourceCode]
+
+select * from [dbo].[Exercise]
+
+update [dbo].[Exercise] set runtimeLimit = 2000 
+
+
+
+
