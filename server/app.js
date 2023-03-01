@@ -8,6 +8,7 @@ var logger = require('morgan');
 var router = express.Router();
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
+var profileRouter = require('./routes/profile')
 
 var app = express();
 
@@ -24,6 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 router.use('/', indexRouter);
 router.use('/auth',authRouter);
+router.use('/profile',profileRouter);
 
 app.use('/api',router);
 

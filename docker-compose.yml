@@ -26,6 +26,8 @@ services:
       - ./example:/usr/local/etc/isolate/example/
       - ./server:/server
       - /server/node_modules
+      - ./cg/cpuacct:/sys/fs/cgroup/cpuacct
+      - ./cg/memory:/sys/fs/cgroup/memory
     build:
       context: .
       dockerfile: ./Dockerfile 
