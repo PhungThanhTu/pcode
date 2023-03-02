@@ -2,7 +2,7 @@ const sql = require('mssql');
 const sqlConfig = require('../configs/mssqlConfig');
 
 exports.registerUser = async (id,username, hashedPassword, fullname, email) => {
-        console.log(sqlConfig);
+    
         const pool = await sql.connect(sqlConfig);
         await pool.request()
             .input('id',sql.UniqueIdentifier,id)
@@ -12,7 +12,7 @@ exports.registerUser = async (id,username, hashedPassword, fullname, email) => {
             .input('fullName',sql.NVarChar,fullname)
             .execute('RegisterPlpUser');
         await pool.close();
-        console.log("Connection closed");
+
         return;
 }
 
