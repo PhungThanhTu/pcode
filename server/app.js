@@ -8,7 +8,8 @@ var logger = require('morgan');
 var router = express.Router();
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
-var profileRouter = require('./routes/profile')
+var profileRouter = require('./routes/profile');
+var courseRouter = require('./routes/course');
 
 var app = express();
 
@@ -24,8 +25,9 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
 router.use('/', indexRouter);
-router.use('/auth',authRouter);
-router.use('/profile',profileRouter);
+router.use('/auth', authRouter);
+router.use('/profile', profileRouter);
+router.use('/course', courseRouter);
 
 app.use('/api',router);
 
