@@ -2,6 +2,7 @@ drop database if exists  plp
 go
 create database plp
 go
+ALTER DATABASE [plp] SET QUERY_STORE = ON;
 use plp
 GO
 -- TABLES

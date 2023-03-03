@@ -161,3 +161,5 @@ EXEC GrantUserRoleToCourse
  @plpRole = 'lecturer'
 
 select * from PlpCourseAuthorization
+
+select * from Course

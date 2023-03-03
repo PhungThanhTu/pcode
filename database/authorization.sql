@@ -1,16 +1,30 @@
+CREATE TABLE PlpCourseRole (
+    Id int PRIMARY key,
+    PlpRoleName varchar(10)
+);
+GO
+
+INSERT INTO [dbo].[PlpCourseRole]
+(id, PlpRoleName)
+VALUES
+(0, 'lecturer'),
+(1, 'student')
+GO
+
 CREATE TABLE PlpCourseAuthorization
     (
         UserId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[PlpUser](id),
         CourseId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[Course](id),
-        PlpRole varchar(10) NOT NULL,
+        PlpRole INT FOREIGN KEY REFERENCES [dbo].[PlpCourseRole](id),
         CONSTRAINT PK_CourseAuthorization PRIMARY KEY (UserId, CourseId)
     );
 GO
 
+
 CREATE PROCEDURE GrantUserRoleToCourse
     @userId UNIQUEIDENTIFIER,
     @courseId UNIQUEIDENTIFIER,
-    @plpRole varchar(10)
+    @plpRole int
     AS
         MERGE INTO [dbo].[PlpCourseAuthorization] Destination
         USING(
