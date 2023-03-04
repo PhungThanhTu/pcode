@@ -201,7 +201,7 @@ create procedure UpdateAvatar
     @avatar NVARCHAR(max)
     AS
         update [dbo].[PlpUser]
-            set hashedPassword = @hashedPassword
+            set avatar = @avatar
             where id = @id
     GO
 go

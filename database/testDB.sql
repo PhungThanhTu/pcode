@@ -163,3 +163,27 @@ EXEC GrantUserRoleToCourse
 select * from PlpCourseAuthorization
 
 select * from Course
+select * from PlpCourseRole
+
+declare @CourseId UNIQUEIDENTIFIER = '28bf2eaf-ff27-4d36-a94b-1e1fc28ed775'
+declare @PlpRoleId INT = 1
+declare @Code VARCHAR(5) = 'a24bc'
+declare @Expiry datetime2 = '2023-03-03 22:00:00'
+
+EXEC CreateInvitation 
+    @CourseId,
+    @PlpRoleId,
+    @Code,
+    @Expiry
+
+select * from CourseInvitation
+
+declare @CourseId UNIQUEIDENTIFIER = '28bf2eaf-ff27-4d36-a94b-1e1fc28ed775'
+EXEC GetCourseStudentInvitationByCourseId
+        @CourseId
+
+declare @email varchar(max) = 'updated2@gmail.com'
+declare @fullName nvarchar(max) = 'Temp2 Updated Name'
+declare @id UNIQUEIDENTIFIER = '8b3a539e-07bc-4fe0-8ef1-fba27841ed35'
+exec UpdateProfile @id,@fullName,@email
+go

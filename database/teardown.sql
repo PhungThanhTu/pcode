@@ -14,7 +14,7 @@ drop procedure CreateInvitation
 
 
 -- cleanup db
-drop table CourseInvitaion
+drop table CourseInvitation
 drop table PlpCourseAuthorization
 drop table SubmissionTestResult
 drop table SubmissionSourceCode
