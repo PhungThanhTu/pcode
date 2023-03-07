@@ -39,3 +39,12 @@ CREATE PROCEDURE GrantUserRoleToCourse
             INSERT (UserId, CourseId, PlpRole)
             VALUES (Source.UserId, Source.CourseId, Source.PlpRole);
 GO
+
+CREATE PROCEDURE GetRoleOfAUserInCourse
+    @userId UNIQUEIDENTIFIER,
+    @courseId UNIQUEIDENTIFIER
+    AS
+    SELECT PlpRole as [Role] from [dbo].[PlpCourseAuthorization]
+        where UserId = @userId
+        and CourseId = @courseId
+GO
