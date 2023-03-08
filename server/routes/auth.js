@@ -95,29 +95,6 @@ router.post('/login', async (req,res) => {
     }
 });
 
-router.get('/profile',authorizedRoute,async (req,res) => {
-    try {
-        const identity = req.identity;
-
-        console.log(identity);
-
-        const userProfile = await getUserById(identity);
-
-        console.log(userProfile);
-
-        res.status(200).json({
-            username: userProfile.username,
-            email: userProfile.email,
-            fullName: userProfile.fullName,
-            avatar: userProfile.avatar
-        });
-    }
-    catch (err)
-    {
-        return handleExceptionInResponse(res,err);
-    }
-});
-
 router.post('/refresh',async (req,res) => {
     try {
         const request = req.body;
