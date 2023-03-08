@@ -2,6 +2,7 @@ drop database if exists  plp
 go
 create database plp
 go
+ALTER DATABASE [plp] SET QUERY_STORE = ON;
 use plp
 GO
 -- TABLES
@@ -200,7 +201,7 @@ create procedure UpdateAvatar
     @avatar NVARCHAR(max)
     AS
         update [dbo].[PlpUser]
-            set hashedPassword = @hashedPassword
+            set avatar = @avatar
             where id = @id
     GO
 go

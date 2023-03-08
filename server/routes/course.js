@@ -5,6 +5,8 @@ const { authorizedRoute } = require('../middlewares/auth.middleware');
 const { createCourseSql } = require('../models/course.model');
 const { grantRoleToCourseSql } = require('../models/right.model');
 const { courseCreateRequestSchema } = require('../schema/course.schema');
+const { nanoid } = require('nanoid');
+const { createInvitationSql } = require('../models/invitation.model');
 var router = express.Router();
 
 router.post('/', authorizedRoute, async (req,res) => {
@@ -16,12 +18,22 @@ router.post('/', authorizedRoute, async (req,res) => {
 
         const title = validatedCourseCreateRequest.title;
         const courseId = randomUUID();
+        const invitationId = nanoid(5);
+
+
 
         await createCourseSql(courseId, title);
 
-        await grantRoleToCourseSql(identity, courseId, 'creator')
+        await grantRoleToCourseSql(identity, courseId, 0);
 
-        return res.sendStatus(201);
+        console.log(invitationId);
+
+        await createInvitationSql(courseId, 1, invitationId);
+
+        return res.status(201).json({
+            courseId: courseId,
+            invitationId: invitationId
+        })
     }
     catch (err)
     {

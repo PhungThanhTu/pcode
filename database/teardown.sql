@@ -10,9 +10,11 @@ drop procedure GetTestCasesBySubmissionId
 drop procedure UpdateSubmissionResult
 drop procedure GrantUserRoleToCourse
 drop procedure CreateCourse
+drop procedure CreateInvitation
 
 
 -- cleanup db
+drop table CourseInvitation
 drop table PlpCourseAuthorization
 drop table SubmissionTestResult
 drop table SubmissionSourceCode
