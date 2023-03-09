@@ -2,7 +2,7 @@ const { randomUUID } = require('crypto');
 var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
 const { authorizedRoute } = require('../middlewares/auth.middleware');
-const { createCourseSql } = require('../models/course.model');
+const { createCourseSql, getAllCourseSql } = require('../models/course.model');
 const { grantRoleToCourseSql } = require('../models/right.model');
 const { courseCreateRequestSchema } = require('../schema/course.schema');
 const { nanoid } = require('nanoid');
@@ -34,6 +34,20 @@ router.post('/', authorizedRoute, async (req,res) => {
             courseId: courseId,
             invitationId: invitationId
         })
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res,err);
+    }
+});
+
+router.get('/',authorizedRoute,async (req, res) => {
+    try {
+        const identity = req.identity;
+
+        const courses = await getAllCourseSql(identity);
+
+        return res.status(200).json(courses);
     }
     catch (err)
     {

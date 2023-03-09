@@ -27,10 +27,11 @@ create procedure CreateInvitation
 GO
 
 create procedure GetCourseInvitationByCourseId
-    @courseId UNIQUEIDENTIFIER
+    @courseId UNIQUEIDENTIFIER,
+    @roleId int
     AS
         select Id as PlpRoleId, PlpRoleName  from [dbo].[CourseInvitation] JOIN [dbo].[PlpCourseRole]
                 on CourseInvitation.PlpRoleId = PlpCourseRole.Id
-        WHERE CourseId = @courseId
+        WHERE CourseId = @courseId and Id = @roleId
 GO
 
