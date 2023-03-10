@@ -26,3 +26,31 @@ exports.getAllCourseSql = async (userId) => {
 
     return result;
 };
+
+exports.getCourseByIdSql = async (courseId) => {
+    const pool = await sql.connect(sqlConfig);
+
+    const request = await pool.request()
+        .input('courseId', sql.UniqueIdentifier, userId)
+        .query('exec GetCourseById @courseId');
+
+    pool.close();
+
+    const result = request.recordset[0];
+
+    return result;
+}
+
+exports.renameCourseSql = async (courseId, title) => {
+
+    const pool = await sql.connect(sqlConfig);
+
+    await pool.request()
+        .input('courseId', sql.UniqueIdentifier, courseId)
+        .input('newTitle', sql.NVarChar, title)
+        .execute('RenameCourse');
+
+    pool.close();
+
+    return;
+}

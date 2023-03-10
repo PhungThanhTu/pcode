@@ -2,11 +2,11 @@ const { randomUUID } = require('crypto');
 var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
 const { authorizedRoute } = require('../middlewares/auth.middleware');
-const { createCourseSql, getAllCourseSql } = require('../models/course.model');
+const { createCourseSql, getAllCourseSql, renameCourseSql } = require('../models/course.model');
 const { grantRoleToCourseSql, getRoleOfCourseSql } = require('../models/right.model');
 const { courseCreateRequestSchema } = require('../schema/course.schema');
 const { nanoid } = require('nanoid');
-const { createInvitationSql, getCourseIdByInvitationSql, getInvitationSql } = require('../models/invitation.model');
+const { createInvitationSql, getInvitationSql } = require('../models/invitation.model');
 var router = express.Router();
 const joi = require('joi');
 
@@ -91,6 +91,35 @@ router.post('/join/:code', authorizedRoute, async (req, res) => {
     catch (err)
     {
         return handleExceptionInResponse(res,err);
+    }
+});
+
+router.put('/:id', authorizedRoute, async ( req,res) => {
+
+    const identity = req.identity;
+
+    const courseId = req.params.id;
+
+    const newTitle = req.body.title;
+
+    try {
+
+        await joi.string().uuid().validateAsync(courseId);
+        await joi.string().min(1).validateAsync(newTitle);
+
+        const role = await getRoleOfCourseSql(identity, courseId);
+
+        if( !role || role.Role !== 0)
+        {
+            return res.sendStatus(404);
+        }
+
+        await renameCourseSql(courseId,newTitle);
+
+        return res.sendStatus(200);
+    }
+    catch (err) {
+
     }
 })
 
