@@ -3,11 +3,12 @@ var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
 const { authorizedRoute } = require('../middlewares/auth.middleware');
 const { createCourseSql, getAllCourseSql } = require('../models/course.model');
-const { grantRoleToCourseSql } = require('../models/right.model');
+const { grantRoleToCourseSql, getRoleOfCourseSql } = require('../models/right.model');
 const { courseCreateRequestSchema } = require('../schema/course.schema');
 const { nanoid } = require('nanoid');
-const { createInvitationSql } = require('../models/invitation.model');
+const { createInvitationSql, getCourseIdByInvitationSql, getInvitationSql } = require('../models/invitation.model');
 var router = express.Router();
+const joi = require('joi');
 
 router.post('/', authorizedRoute, async (req,res) => {
     try {
@@ -54,5 +55,43 @@ router.get('/',authorizedRoute,async (req, res) => {
         return handleExceptionInResponse(res,err);
     }
 });
+
+router.post('/join/:code', authorizedRoute, async (req, res) => {
+    try {
+        const identity = req.identity;
+
+        const invitationCode = req.params.code;
+
+        await joi.string().min(5).max(5).validateAsync(invitationCode);
+
+        const invitationRecord = await getInvitationSql(invitationCode);
+
+        if(!invitationRecord)
+            return res.sendStatus(404);
+        
+        const courseId = invitationRecord.CourseId;
+        const roleId = invitationRecord.PlpRoleId;
+
+        // if user is already an owner, do not grant role
+        const userRole = await getRoleOfCourseSql(identity, courseId);
+
+        if(userRole && userRole.Role == 0){
+            return res.status(201).json({
+                courseId
+            });
+        }
+
+        await grantRoleToCourseSql(identity, courseId, roleId);
+
+        return res.status(201).json({
+            courseId
+        });
+
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res,err);
+    }
+})
 
 module.exports = router;
