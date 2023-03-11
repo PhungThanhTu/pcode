@@ -22,7 +22,9 @@ GO
 create table Course
 (
     id UNIQUEIDENTIFIER PRIMARY KEY,
-    title nvarchar(max)
+    title nvarchar(max),
+    courseSubject nvarchar(max),
+    courseTheme nvarchar(max)
 );
 go
 create table Exercise
