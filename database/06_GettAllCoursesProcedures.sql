@@ -7,3 +7,4 @@ create procedure GetAllCourses
             left join [dbo].[CourseInvitation] I on C.id = I.CourseId
         where A.UserId = @userId
 GO
+
