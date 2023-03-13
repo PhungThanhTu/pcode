@@ -6,4 +6,3 @@ create procedure RenameCourse
         SET title = @newTitle
         where id = @courseId
 go
-
