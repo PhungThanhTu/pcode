@@ -39,8 +39,9 @@ router.put('/',authorizedRoute, async (req,res) => {
 
         const email = validatedUpdateProfileRequest.email;
         const fullName = validatedUpdateProfileRequest.fullName;
+        const avatar = validatedUpdateProfileRequest.avatar;
 
-        await updateProfile(identity,fullName,email);
+        await updateProfile(identity,fullName,email,avatar);
 
         return res.sendStatus(200);
     }
