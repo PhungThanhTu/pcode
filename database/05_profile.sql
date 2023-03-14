@@ -6,7 +6,7 @@ create procedure UpdateProfile
     @id UNIQUEIDENTIFIER,
     @fullName nvarchar(max),
     @email varchar(max),
-    @avatar nvarchar(max)
+    @avatar nvarchar(max) = NULL
     as
     update [dbo].[PlpUser]
         set email = @email,
@@ -23,7 +23,6 @@ create procedure ChangePassword
             set hashedPassword = @hashedPassword
         where id = @id
 go
-
 
 
 
