@@ -49,12 +49,13 @@ exports.updateRefreshToken = async (id, refreshToken, expiryDate) => {
     return;   
 }
 
-exports.updateProfile = async (id, fullName, email) => {
+exports.updateProfile = async (id, fullName, email, avatar) => {
     const pool = await sql.connect(sqlConfig);
     await pool.request()
         .input('id', sql.UniqueIdentifier, id)
         .input('fullName', sql.NVarChar, fullName)
         .input('email', sql.VarChar, email)
+        .input('avatar',sql.NVarChar,avatar)
         .execute("UpdateProfile");
     await pool.close();
     return;
