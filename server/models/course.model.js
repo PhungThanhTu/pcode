@@ -1,12 +1,14 @@
 const sql = require('mssql');
 const sqlConfig = require('../configs/mssqlConfig');
 
-exports.createCourseSql = async (id, title) => {
+exports.createCourseSql = async (id, title, subject, theme) => {
     const pool = await sql.connect(sqlConfig);
 
     await pool.request()
         .input('id', sql.UniqueIdentifier, id)
         .input('title',sql.NVarChar,title)
+        .input('courseSubject',sql.NVarChar,subject)
+        .input('courseTheme',sql.NVarChar,theme)
         .execute('CreateCourse');
 
     await pool.close();
