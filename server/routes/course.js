@@ -18,12 +18,15 @@ router.post('/', authorizedRoute, async (req,res) => {
         const validatedCourseCreateRequest = await courseCreateRequestSchema.validateAsync(courseCreateRequest);
 
         const title = validatedCourseCreateRequest.title;
+        const subject = validatedCourseCreateRequest.subject;
+        const theme = validatedCourseCreateRequest.theme;
+
         const courseId = randomUUID();
         const invitationId = nanoid(5);
 
 
 
-        await createCourseSql(courseId, title);
+        await createCourseSql(courseId, title, subject, theme);
 
         await grantRoleToCourseSql(identity, courseId, 0);
 
