@@ -30,7 +30,7 @@ services:
       - ./cg/memory:/sys/fs/cgroup/memory
     build:
       context: .
-      dockerfile: ./Dockerfile 
+      dockerfile: ./server/Dockerfile 
     ports:
       - "8000:8000"
 volumes:

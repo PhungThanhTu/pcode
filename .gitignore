@@ -110,6 +110,9 @@ isolate/isolate.1.html
 isolate/*.o
 
 example/
+!example/.gitkeep
 cg/
+!cg/memory/.gitkeep
+!cg/cpuacct/.gitkeep
 .vscode/
 *.DS_Store
