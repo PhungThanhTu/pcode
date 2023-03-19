@@ -1,5 +1,4 @@
 
----- PROCEDURES 
 create procedure CreateCourse
     @id UNIQUEIDENTIFIER,
     @title nvarchar(max),
@@ -10,4 +9,4 @@ create procedure CreateCourse
     (id, title, courseSubject, courseTheme)
     VALUES
     (@id, @title, @courseSubject, @courseTheme)
-GO
+

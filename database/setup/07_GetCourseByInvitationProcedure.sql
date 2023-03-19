@@ -3,4 +3,3 @@ create procedure GetCourseIdByInvitationCode
     as
         select CourseId, PlpRoleId from [dbo].[CourseInvitation]
         where Code = @code
-go

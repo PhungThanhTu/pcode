@@ -1,7 +1,3 @@
-
------- INITIALIZE DATABASE, 
-
---- PROCEDURE
 create procedure UpdateProfile
     @id UNIQUEIDENTIFIER,
     @fullName nvarchar(max),
@@ -13,16 +9,6 @@ create procedure UpdateProfile
             fullName = @fullName,
             avatar = isnull(@avatar,avatar)
         where id = @id
-go
-
-create procedure ChangePassword
-    @id UNIQUEIDENTIFIER,
-    @hashedPassword varchar(max)
-    as
-        update [dbo].[PlpUser]
-            set hashedPassword = @hashedPassword
-        where id = @id
-go
 
 
 
