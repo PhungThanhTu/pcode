@@ -3,6 +3,3 @@ create procedure GetCourseById
     AS
     select * from [dbo].[Course]
     where id = @courseId
-GO
-
-select * from [dbo].[Course]

@@ -1,5 +1,4 @@
 
----- PROCEDURES 
 create procedure CreateCourse
     @id UNIQUEIDENTIFIER,
     @title nvarchar(max),
@@ -7,15 +6,7 @@ create procedure CreateCourse
     @courseTheme nvarchar(max) = NULL
     AS
     INSERT INTO [dbo].[Course]
-    (id, title)
+    (id, title, courseSubject, courseTheme)
     VALUES
-    (@id, @title)
-GO
+    (@id, @title, @courseSubject, @courseTheme)
 
-create table Course
-(
-    id UNIQUEIDENTIFIER PRIMARY KEY,
-    title nvarchar(max),
-    courseSubject nvarchar(max),
-    courseTheme nvarchar(max)
-);

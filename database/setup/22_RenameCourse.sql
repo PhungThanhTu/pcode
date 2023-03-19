@@ -5,4 +5,3 @@ create procedure RenameCourse
     UPDATE [dbo].[Course]  
         SET title = @newTitle
         where id = @courseId
-go

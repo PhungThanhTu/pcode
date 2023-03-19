@@ -8,4 +8,3 @@ create procedure GetAllCourses
             left join [dbo].[PlpCourseAuthorization] Creator on A.CourseId = Creator.CourseId
             join [dbo].[PlpUser] U on Creator.UserId = U.id
         where A.UserId = @userId and Creator.PlpRole = 0
-GO

@@ -108,8 +108,11 @@ isolate/isolate
 isolate/isolate.1
 isolate/isolate.1.html
 isolate/*.o
-
+database/app/node_modules
 example/
+!example/.gitkeep
 cg/
+!cg/memory/.gitkeep
+!cg/cpuacct/.gitkeep
 .vscode/
 *.DS_Store
