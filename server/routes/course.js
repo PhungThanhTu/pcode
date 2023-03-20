@@ -35,8 +35,12 @@ router.post('/', authorizedRoute, async (req,res) => {
         await createInvitationSql(courseId, 1, invitationId);
 
         return res.status(201).json({
-            courseId: courseId,
-            invitationId: invitationId
+            id: courseId,
+            CreatorId: identity,
+            Code: invitationId,
+            title: title,
+            subject: subject,
+            theme: theme
         })
     }
     catch (err)
