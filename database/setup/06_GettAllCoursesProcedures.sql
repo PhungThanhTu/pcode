@@ -1,7 +1,7 @@
 create procedure GetAllCourses
     @userId UNIQUEIDENTIFIER
     AS
-        select A.CourseId as id, Creator.UserId as CreatorId, U.username as CreatorName, title, Code, A.PlpRole
+        select A.CourseId as id, Creator.UserId as CreatorId, U.username as CreatorName, title, courseSubject, courseTheme, Code, A.PlpRole
             from [dbo].[PlpCourseAuthorization] A 
             join [dbo].[Course] C on A.CourseId = C.id 
             left join [dbo].[CourseInvitation] I on C.id = I.CourseId
