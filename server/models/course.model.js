@@ -56,3 +56,15 @@ exports.renameCourseSql = async (courseId, title) => {
 
     return;
 }
+
+exports.getCourseTitleUsingInvitationCodeSql = async (code) => {
+    const pool = await sql.connect(sqlConfig);
+
+    const request = await pool.request()
+        .input('code',sql.VarChar(5), code)
+        .query('exec GetCourseUsingStudentInvitationCode @code');
+
+    const result = request.recordset[0];
+
+    return result;
+}
