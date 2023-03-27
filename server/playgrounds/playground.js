@@ -1,4 +1,4 @@
-const { getRoleOfCourseSql } = require("./models/right.model")
+const { getRoleOfCourseSql } = require("../models/right.model")
 
 const test = async () => {
 

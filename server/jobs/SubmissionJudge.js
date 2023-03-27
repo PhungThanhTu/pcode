@@ -318,5 +318,3 @@ module.exports = {
 
 
 
-
-module.exports.judgeSubmission('40a50118-e207-4672-9a44-7bf0aa51be76','c7f5f23d-ebdf-4262-b050-97aa5590aa03',2);
