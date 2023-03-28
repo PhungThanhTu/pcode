@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  server:
+    container_name: plp_server
+    privileged: true
+    image: plp_server
+    env_file:
+      - ./.env
+    volumes:
+      - ./../../example:/usr/local/etc/isolate/example/
+      - ./../../server:/server
+      - /server/node_modules
+      - ./../../cg/cpuacct:/sys/fs/cgroup/cpuacct
+      - ./../../cg/memory:/sys/fs/cgroup/memory
+    build:
+      context: ./../../
+      dockerfile: ./server/Dockerfile 
+    ports:
+      - "8000:8000"
+volumes:
+    mssql:

@@ -4,7 +4,7 @@ services:
   mssql:
     container_name: mssql    
     build:
-      context: .
+      context: ./../../
       dockerfile: ./database/Dockerfile    # tên container
     restart: always
     user: root
@@ -15,8 +15,8 @@ services:
       DATABASE: "plp"
     volumes:
       - mssql:/var/opt/mssql
-      - ./database/nodeapp:/nodeapp
-      - ./database/setup:/setup
+      - ./../../database/nodeapp:/nodeapp
+      - ./../../database/setup:/setup
     ports:
           - "1400:1433"                     # cổng kết nối
     expose:
@@ -26,6 +26,7 @@ services:
     privileged: true
     image: plp_server
     environment:
+      - NODENV=dev
       - PORT=8000
       - MSSQL_HOST=mssql
       - MSSQL_PORT=1433
@@ -37,13 +38,13 @@ services:
       - JWT_LIFETIME=5m
       - REFRESH_TOKEN_LIFETIME=7
     volumes:
-      - ./example:/usr/local/etc/isolate/example/
-      - ./server:/server
+      - ./../../example:/usr/local/etc/isolate/example/
+      - ./../../server:/server
       - /server/node_modules
-      - ./cg/cpuacct:/sys/fs/cgroup/cpuacct
-      - ./cg/memory:/sys/fs/cgroup/memory
+      - ./../../cg/cpuacct:/sys/fs/cgroup/cpuacct
+      - ./../../cg/memory:/sys/fs/cgroup/memory
     build:
-      context: .
+      context: ./../../
       dockerfile: ./server/Dockerfile 
     ports:
       - "8000:8000"
