@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  mssql:
+    container_name: mssql    
+    build:
+      context: ./../../
+      dockerfile: ./database/Dockerfile    # tên container
+    restart: always
+    user: root
+    hostname: mssql
+    environment:
+      MSSQL_SA_PASSWORD: "Superadmin123456!1"       #Thiết lập password
+      ACCEPT_EULA: Y
+      DATABASE: "plp"
+    volumes:
+      - mssql:/var/opt/mssql
+      - ./../../database/nodeapp:/nodeapp
+      - ./../../database/setup:/setup
+    ports:
+          - "1400:1433"                     # cổng kết nối
+    expose:
+      - 1400
+  server:
+    container_name: plp_server
+    privileged: true
+    image: plp_server
+    environment:
+      - NODENV=dev
+      - PORT=8000
+      - MSSQL_HOST=mssql
+      - MSSQL_PORT=1433
+      - MSSQL_USERNAME=sa
+      - MSSQL_PASSWORD=Superadmin123456!1
+      - MSSQL_DATABASE=plp
+      - BCRYPT_SECRET=NrmEcrfBQloi54K2sK8e
+      - JWT_SECRET=OfAt39oyrmyMf1slgllI
+      - JWT_LIFETIME=5m
+      - REFRESH_TOKEN_LIFETIME=7
+    volumes:
+      - ./../../example:/usr/local/etc/isolate/example/
+      - ./../../server:/server
+      - /server/node_modules
+      - ./../../cg/cpuacct:/sys/fs/cgroup/cpuacct
+      - ./../../cg/memory:/sys/fs/cgroup/memory
+    build:
+      context: ./../../
+      dockerfile: ./server/Dockerfile 
+    ports:
+      - "8000:8000"
+volumes:
+    mssql:
