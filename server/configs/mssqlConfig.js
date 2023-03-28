@@ -7,7 +7,7 @@ module.exports = {
     password: process.env.MSSQL_PASSWORD,
     database: process.env.MSSQL_DATABASE,
     options: {
-        encrypt: false,
+        encrypt: process.env.NODENV === "prod",
         useUTC: true,
       }
 }
