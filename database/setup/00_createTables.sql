@@ -1,5 +1,3 @@
-
-
 -- TABLES
 -- setup PlpUser
 create table PlpUser

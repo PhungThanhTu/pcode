@@ -31,15 +31,6 @@ EXEC UpdateSubmissionResult @jsonJudgeData, @submissionId, @programmingLanguageI
 EXEC GetTestCasesBySubmissionId @Id = '40a50118-e207-4672-9a44-7bf0aa51be76'
 
 
-select * from SubmissionTestResult
-select * from SubmissionSourceCode
-select * from Submission
-select * from RunStatus
-select * from MetaTestCase
-select * from SampleSourceCode
-select * from [dbo].[ProgrammingLanguage]
-select * from Exercise
-select * from course
 -- INSERT JUDGE DATA
     -- insert exercise
 insert into [dbo].[Exercise]
@@ -131,19 +122,7 @@ go
 
 update [dbo].[Exercise] set memoryLimit = 12800 where id = 'c7f5f23d-ebdf-4262-b050-97aa5590aa03'
 
-update [dbo].[SubmissionSourceCode] set sourceCode = N'#include<iostream>
 
-int SumOfTwoIntergers(int a, int b) {
-  return a + b;
-}
-
-int main(){
-    int a,b;
-    std::cin >> a >> b;
-    std::cout << SumOfTwoIntergers(a,b);
-    return 0;
-}'
-where submissionId = '40a50118-e207-4672-9a44-7bf0aa51be76'
 select * from SubmissionTestResult
 select * from [dbo].[SubmissionSourceCode]
 
