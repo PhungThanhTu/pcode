@@ -3,7 +3,7 @@ const joi = require('joi');
 exports.updateProfileRequestSchema = joi.object({
     fullName: joi.string().required(),
     email: joi.string().required(),
-    avatar: joi.string()
+    avatar: [joi.string().optional(), joi.allow(null,'')]
 });
 
 exports.changePasswordRequestSchema = joi.object({
