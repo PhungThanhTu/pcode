@@ -60,6 +60,7 @@ create table MetaTestCase
     input nvarchar(max),
     expectedOutput nvarchar(max),
     scoreWeight int,
+    visibility bit
 )
 create table Submission
 (
