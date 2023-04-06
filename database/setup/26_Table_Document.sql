@@ -1,7 +1,7 @@
 create table Document (
     Id UNIQUEIDENTIFIER PRIMARY KEY,
-    ContentTypeId int FOREIGN KEY REFERENCES [dbo].[ContentType](Id),
+    Title nvarchar(320),
+    DocumentDescription nvarchar(640),
     CreatorId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[PlpUser](id),
-    Published bit,
     HasExercise bit
 )

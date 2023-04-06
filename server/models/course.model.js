@@ -33,7 +33,7 @@ exports.getCourseByIdSql = async (courseId) => {
     const pool = await sql.connect(sqlConfig);
 
     const request = await pool.request()
-        .input('courseId', sql.UniqueIdentifier, userId)
+        .input('courseId', sql.UniqueIdentifier, courseId)
         .query('exec GetCourseById @courseId');
 
     pool.close();

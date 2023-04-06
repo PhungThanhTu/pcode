@@ -10,6 +10,7 @@ var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
 var profileRouter = require('./routes/profile');
 var courseRouter = require('./routes/course');
+var documentRouter = require('./routes/document');
 
 var app = express();
 
@@ -28,6 +29,7 @@ router.use('/', indexRouter);
 router.use('/auth', authRouter);
 router.use('/profile', profileRouter);
 router.use('/course', courseRouter);
+router.use('/document', documentRouter);
 
 app.use('/api',router);
 
