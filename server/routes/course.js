@@ -2,7 +2,7 @@ const { randomUUID } = require('crypto');
 var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
 const { authorizedRoute } = require('../middlewares/auth.middleware');
-const { createCourseSql, getAllCourseSql, renameCourseSql, getCourseTitleUsingInvitationCodeSql } = require('../models/course.model');
+const { createCourseSql, getAllCourseSql, renameCourseSql, getCourseTitleUsingInvitationCodeSql, getCourseByIdSql, getDocumentsInCourseSql, getAllDocumentsInCourseSql, getPublishedDocumentInCourseSql } = require('../models/course.model');
 const { grantRoleToCourseSql, getRoleOfCourseSql } = require('../models/right.model');
 const { courseCreateRequestSchema } = require('../schema/course.schema');
 const { nanoid } = require('nanoid');
@@ -62,6 +62,45 @@ router.get('/',authorizedRoute,async (req, res) => {
         return handleExceptionInResponse(res,err);
     }
 });
+
+router.get('/:id', authorizedRoute, async (req,res) => {
+    const identity = req.identity;
+    const courseId = req.params.id;
+
+    try {
+        await joi.string().uuid().validateAsync(courseId);
+
+        const role = await getRoleOfCourseSql(identity, courseId);
+
+        if(!role) {
+            return res.sendStatus(404);
+        }
+
+        const course = await getCourseByIdSql(courseId);
+
+        let documents;
+
+        if(role.Role === 0)
+        {
+            documents = await getAllDocumentsInCourseSql(courseId);
+
+        }
+        else {
+            documents = await getPublishedDocumentInCourseSql(courseId);
+        }
+
+        const response = {
+            ...course,
+            documents
+        }
+
+        return res.status(200).json(response);
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res, err);
+    }
+})
 
 router.post('/join/:code', authorizedRoute, async (req, res) => {
     try {
