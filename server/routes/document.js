@@ -3,7 +3,7 @@ var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
 
 const { authorizedRoute } = require('../middlewares/auth.middleware');
-const { getCourseByIdSql } = require('../models/course.model');
+const { getCourseByIdSql, getRoleInCourseSql } = require('../models/course.model');
 const { createDocumentSql, linkDocumentWithCourseSql } = require('../models/document.model');
 const { documentCreationSchema } = require('../schema/document.schema');
 var router = express.Router();
@@ -18,6 +18,13 @@ router.post('/', authorizedRoute , async (req, res) => {
         const courseId = validatedDocumentCreateRequest.courseId;
         
         const course = await getCourseByIdSql(courseId);
+
+        const role = await getRoleInCourseSql(courseId, identity);
+
+        if(role.Role !== 0 )
+        {
+            return res.status(403).send("Not allowed");
+        }
 
         if(!course){
             return res.status(404).send("Course not found");
@@ -46,5 +53,6 @@ router.post('/', authorizedRoute , async (req, res) => {
         return handleExceptionInResponse(res, err)
     }
 });
+
 
 module.exports = router;
