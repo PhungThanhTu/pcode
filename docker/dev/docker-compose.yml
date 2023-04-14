@@ -1,6 +1,9 @@
 version: "3.8"
 
 services:
+  azurite:
+    container_name: azurite
+    image: mcr.microsoft.com/azure-storage/azurite
   mssql:
     container_name: mssql    
     build:
@@ -37,6 +40,7 @@ services:
       - JWT_SECRET=OfAt39oyrmyMf1slgllI
       - JWT_LIFETIME=5m
       - REFRESH_TOKEN_LIFETIME=7
+      - AZURE_BLOB_CONSTRING=UseDevelopmentStorage=true;
     volumes:
       - ./../../example:/usr/local/etc/isolate/example/
       - ./../../server:/server
