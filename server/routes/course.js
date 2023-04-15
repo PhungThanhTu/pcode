@@ -178,6 +178,9 @@ router.get('/info/:code', async (req,res) => {
 
         const course = await getCourseTitleUsingInvitationCodeSql(invitationCode);
 
+        if(!course)
+            return res.sendStatus(404);
+
         return res.status(200).json(course);
     }
     catch (err)
