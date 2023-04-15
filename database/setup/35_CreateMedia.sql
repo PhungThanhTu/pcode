@@ -9,7 +9,11 @@ create procedure CreateMedia
         INSERT INTO [dbo].[MediaStorage]
         (
             Id,
+<<<<<<< Updated upstream
             MediaBlogName,
+=======
+            MediaBlobName,
+>>>>>>> Stashed changes
             Extension,
             MimeType,
             FileSize,
