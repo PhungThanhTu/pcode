@@ -26,12 +26,14 @@ const config = {
       }
 }
 
-const tryConnect = async () => {
+const tryConnect = async (dbConfig) => {
         try {
-            await sql.connect(config)
+            await sql.connect(dbConfig)
             console.log("connected");
+            return true;
         } catch (err) {
-            console.log(err);
+            console.log("Connect failed, Waiting for the db to setup ...");
+            return false;
         }
 }
 
@@ -52,6 +54,10 @@ const createDatabase = async () => {
     }
 }
 
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const execQuery = async (query) => {
     try
     {
@@ -59,7 +65,6 @@ const execQuery = async (query) => {
 
         await pool.request()
         .query(query);
-        console.log(`Database ${config.database} created`);
         await pool.close();
         return;
     }
@@ -106,4 +111,53 @@ const execSingleFile = async (path) => {
     console.log('\x1b[33m%s\x1b[0m',`File ${path} has been executed successfully`);
 }
 
-setTimeout(startSQLInitialization, 15000);
+const applyQuery = async () => {
+    const paths = await getSqlPaths();
+    
+        for(const path of paths){
+            await execSingleFile(path);
+        }
+}
+
+var dbCreatedFlag = false;
+var queryAppliedFlag = false;
+
+var numCon = 0;
+
+const sqlInit = async () => {
+    while(!dbCreatedFlag && numCon < 10)
+    {
+        await timeout(3000);
+        dbCreatedFlag = await tryConnect(masterDbConfig);
+
+        if(dbCreatedFlag){
+            await createDatabase();
+        }
+
+    }
+
+    while(!queryAppliedFlag && numCon < 10)
+    {
+        await timeout(3000);
+        queryAppliedFlag = await tryConnect(config);
+        
+        if(queryAppliedFlag)
+        {
+            await applyQuery();
+        }
+    }
+    if(numCon >= 10)
+    {
+        console.log("Migration failed, please reset the process by using the command :");
+        console.log('\x1b[32m%s\x1b[0m',`docker exec -it mssql node setup.js`);
+        console.log("If the command above failed, try rerun the whole startup by run these commands: ");
+        console.log('\x1b[32m%s\x1b[0m',`[for mac and linux]: source teardown.sh && source startup.sh`);
+        console.log('\x1b[32m%s\x1b[0m',`[for windows]: .\\teardown.bat`);
+        console.log('\x1b[32m%s\x1b[0m',`[for windows]: .\\startup.bat`);
+    }
+    else {
+        console.log("Migration completed successfully, your application is ready to go");
+    }
+}
+console.log("Applying database migration process, please wait until it completed, ...")
+setTimeout(sqlInit, 5000);
