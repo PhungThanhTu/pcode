@@ -3,7 +3,14 @@ const sql = require('mssql');
 const { conString, containerName } = require('../configs/blobConfig');
 const sqlConfig = require('../configs/mssqlConfig');
 
-const createMediaSql = async (id, fileName, extension, mime, download, size) => {
+const createMediaSql = async (
+    id, 
+    fileName, 
+    extension, 
+    mime, 
+    download, 
+    size) => 
+{
     const pool = await sql.connect(sqlConfig);
 
     await pool.request()
@@ -33,19 +40,23 @@ const deleteMediaSql = async (id) => {
 const deleteMediaBlob = async (id) => {
     try {
         const blobName = id;
-        const blobClient = BlobServiceClient.fromConnectionString(conString);
+        const blobClient = BlobServiceClient
+            .fromConnectionString(conString);
 
-        const containerClient = blobClient.getContainerClient(containerName);
+        const containerClient = blobClient
+            .getContainerClient(containerName);
 
         await containerClient.createIfNotExists();
 
-        const singleBlobClient = containerClient.getBlockBlobClient(blobName);
+        const singleBlobClient = containerClient
+            .getBlockBlobClient(blobName);
+
         await singleBlobClient.delete();
 
     }
     catch (err)
     {
-        console.log(`Upload to blob storage failed due to the error ${err}`)
+        console.log(`Delete media from blob storage failed due to the error ${err}`)
         throw err;
     }
 }
@@ -53,13 +64,17 @@ const deleteMediaBlob = async (id) => {
 const createMediaBlob = async (id, fileContent, size) => {
     try {
         const blobName = id;
-        const blobClient = BlobServiceClient.fromConnectionString(conString);
+        const blobClient = BlobServiceClient
+            .fromConnectionString(conString);
 
-        const containerClient = blobClient.getContainerClient(containerName);
+        const containerClient = blobClient
+            .getContainerClient(containerName);
 
         await containerClient.createIfNotExists();
 
-        const singleBlobClient = containerClient.getBlockBlobClient(blobName);
+        const singleBlobClient = containerClient
+            .getBlockBlobClient(blobName);
+
         await singleBlobClient.upload(fileContent, size);
 
         return id;
@@ -71,11 +86,24 @@ const createMediaBlob = async (id, fileContent, size) => {
     }
 }
 
-module.exports.uploadMedia = async (id, fileName, extension, mime, download, fileContent) => {
+module.exports.uploadMedia = async (
+    id, 
+    fileName, 
+    extension, 
+    mime, 
+    download, 
+    fileContent) => 
+{
     const size = fileContent.length;
 
     await createMediaBlob(id, fileContent, size);
-    await createMediaSql(id, fileName, extension, mime, download, size);
+    await createMediaSql(
+        id, 
+        fileName, 
+        extension, 
+        mime, 
+        download, 
+        size);
 }
 
 module.exports.getMediaMetaDataSql = async (id) => {
@@ -94,11 +122,16 @@ module.exports.getMediaMetaDataSql = async (id) => {
 module.exports.getMediaBlobStream = async (id) => {
     const blobName = id;
 
-    const blobClient = BlobServiceClient.fromConnectionString(conString);
-    const containerClient = blobClient.getContainerClient(containerName);
-    const singleBlobClient = containerClient.getBlockBlobClient(blobName);
+    const blobClient = BlobServiceClient
+        .fromConnectionString(conString);
+    const containerClient = blobClient
+        .getContainerClient(containerName);
+    const singleBlobClient = containerClient
+        .getBlockBlobClient(blobName);
 
-    const blobStream = await singleBlobClient.download();
+    const blobStream = 
+        await singleBlobClient
+        .download();
     
     return blobStream;
 }

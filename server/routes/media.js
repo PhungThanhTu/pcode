@@ -4,16 +4,29 @@ const { randomUUID } = require('crypto');
 const mime = require('mime-types');
 const multer = require('multer');
 const { maxFileSize } = require('../configs/blobConfig');
-const { handleExceptionInResponse } = require('../exception');
-const { uploadMedia, getMediaMetaDataSql, getMediaBlobStream, deleteMedia } = require('../models/media.model');
-const { getFileExtensions } = require('../utils/media.utils');
+const { 
+    handleExceptionInResponse } 
+    = require('../exception');
+
+const { 
+    uploadMedia, 
+    getMediaMetaDataSql, 
+    getMediaBlobStream, 
+    deleteMedia } 
+    = require('../models/media.model');
+const { 
+    getFileExtensions } 
+    = require('../utils/media.utils');
+
 var router = express.Router();
 
 const upload = multer({
     storage: multer.memoryStorage()
 });
 
-router.post('/', upload.single('file') , async (req, res) => {
+router.post('/', 
+    upload.single('file') , 
+    async (req, res) => {
     try {
         const file = req.file;
         if(!file) {
@@ -22,14 +35,18 @@ router.post('/', upload.single('file') , async (req, res) => {
         const id = randomUUID();
         const fileContent = file.buffer;
         const name = file.originalname;
-        const download = req.body.download === '1' ? true : false;
+        const download = 
+            req.body.download === '1' 
+            ? true 
+            : false;
         const fileSize = file.buffer.length;
         const fileSizeInMb = (fileSize / (1024 * 1024)).toFixed(2);
         const extension = getFileExtensions(name);
         const mimeType = mime.lookup(extension);
 
         if(download === undefined){
-            return res.status(400).send("Must contain download flag");
+            return res.status(400)
+                .send("Must contain download flag");
         }
 
         if(fileSize > maxFileSize)
@@ -76,8 +93,11 @@ router.get('/:id', async (req, res) => {
         const fileName = fileMeta.MediaBlobName;
 
         res.setHeader('Content-Type', contentType);
-        res.setHeader('Content-Security-Policy', "frame-ancestors *");
-        res.setHeader('Content-Disposition', `${download ? 'attachment' : 'inline'}; filename="${fileName}"`);
+        res.setHeader(
+            'Content-Security-Policy', 
+            "frame-ancestors *");
+        res.setHeader('Content-Disposition', 
+            `${download ? 'attachment' : 'inline'}; filename="${fileName}"`);
 
         fileStream.readableStreamBody.pipe(res);
 
