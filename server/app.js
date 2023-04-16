@@ -11,6 +11,7 @@ var authRouter = require('./routes/auth');
 var profileRouter = require('./routes/profile');
 var courseRouter = require('./routes/course');
 var documentRouter = require('./routes/document');
+var mediaRouter = require('./routes/media');
 
 var app = express();
 
@@ -30,6 +31,7 @@ router.use('/auth', authRouter);
 router.use('/profile', profileRouter);
 router.use('/course', courseRouter);
 router.use('/document', documentRouter);
+router.use('/media', mediaRouter);
 
 app.use('/api',router);
 
