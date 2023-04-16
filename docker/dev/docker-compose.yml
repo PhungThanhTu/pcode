@@ -4,6 +4,10 @@ services:
   azurite:
     container_name: azurite
     image: mcr.microsoft.com/azure-storage/azurite
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
   mssql:
     container_name: mssql    
     build:
@@ -40,7 +44,7 @@ services:
       - JWT_SECRET=OfAt39oyrmyMf1slgllI
       - JWT_LIFETIME=5m
       - REFRESH_TOKEN_LIFETIME=7
-      - AZURE_BLOB_CONSTRING=UseDevelopmentStorage=true;
+      - AZURE_BLOB_CONSTRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;
     volumes:
       - ./../../example:/usr/local/etc/isolate/example/
       - ./../../server:/server
