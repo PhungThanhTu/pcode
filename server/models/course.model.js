@@ -102,12 +102,12 @@ exports.getRoleInCourseSql = async (courseId, identity) => {
     const pool = await sql.connect(sqlConfig);
 
     const request = await pool.request()
-        .input('CourseId', sql.UniqueIdentifier, courseId)
-        .input('Userid', sql.UniqueIdentifier, identity)
-        .query('exec GetRoleInCourse @CourseId, @UserId');
+        .input('courseId', sql.UniqueIdentifier, courseId)
+        .input('userId', sql.UniqueIdentifier, identity)
+        .query('exec GetRoleOfAUserInCourse @userId, @courseId');
 
     await pool.close();
-
+    
     const result = request.recordset[0];
 
     return result;
