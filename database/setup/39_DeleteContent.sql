@@ -1,5 +1,5 @@
 create procedure DeleteContent
     @Id UNIQUEIDENTIFIER
     AS
-    DELETE FROM [dbo].[ContentType]
+    DELETE FROM [dbo].[DocumentContent]
         where Id = @Id

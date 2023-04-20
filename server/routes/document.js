@@ -60,6 +60,27 @@ router.post('/', authorizedRoute , async (req, res) => {
     }
 });
 
+router.get(
+    '/:documentId',
+    authorizedRoute,
+    verifyExistingDocument,
+    async (req, res) => {
+        try {
+            const document = req.document;
+            console.log(document.Id);
+            const contents = await getContentsByDocumentIdSql(document.Id);
+
+            return res.status(200).json({
+                ...document,
+                Contents: contents
+            });
+        }
+        catch (err)
+        {
+            handleExceptionInResponse(res, err);
+        }
+    });
+
 router.post(
     '/:documentId/content',
     authorizedRoute,
@@ -133,7 +154,8 @@ router.post(
         }
     });
 
-router.delete('/:documentId/content/',
+router.delete(
+    '/:documentId/content/',
     authorizedRoute,
     verifyExistingDocument,
     async (req,res) => {
