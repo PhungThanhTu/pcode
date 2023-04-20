@@ -40,3 +40,30 @@ exports.setDocumentPublicitySql = async (documentId, courseId, publicity) => {
     await pool.close();
     return;
 }
+
+exports.getDocumentContentTypes = async () => {
+    const pool = await sql.connect(sqlConfig);
+
+    const request = await pool.request()
+        .query('exec GetContentTypes');
+
+    await pool.close();
+
+    const result = request.recordset;
+
+    return result;
+}
+
+exports.getDocumentByIdSql = async (id) => {
+    const pool = await sql.connect(sqlConfig);
+
+    const request = await pool.request()
+        .input('Id', sql.UniqueIdentifier, id)
+        .query('exec GetDocumentById @Id');
+    
+    await pool.close();
+
+    const result = request.recordset[0];
+
+    return result;
+}

@@ -1,11 +1,17 @@
 const { randomUUID } = require('crypto');
 var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
-
+const multer = require('multer');
 const { authorizedRoute } = require('../middlewares/auth.middleware');
 const { getCourseByIdSql, getRoleInCourseSql } = require('../models/course.model');
-const { createDocumentSql, linkDocumentWithCourseSql } = require('../models/document.model');
+const { createDocumentSql, linkDocumentWithCourseSql, getDocumentContentTypes } = require('../models/document.model');
 const { documentCreationSchema } = require('../schema/document.schema');
+const { uploadSingleFile } = require('../middlewares/media.middleware');
+const { verifyExistingDocument } = require('../middlewares/document.middleware');
+const { getFileExtensions } = require('../utils/media.utils');
+const { lookup } = require('mime-types');
+const { uploadMedia, deleteMedia } = require('../models/media.model');
+const { createContentSql, getContentsByDocumentIdSql, deleteContentSql } = require('../models/content.model');
 var router = express.Router();
 
 router.post('/', authorizedRoute , async (req, res) => {
@@ -53,6 +59,103 @@ router.post('/', authorizedRoute , async (req, res) => {
         return handleExceptionInResponse(res, err)
     }
 });
+
+router.post(
+    '/:documentId/content',
+    authorizedRoute,
+    verifyExistingDocument,
+    uploadSingleFile, 
+    async (req,res) => 
+    {
+        try {
+            const documentId = req.params.documentId;
+            const contentId = randomUUID();
+            const contentTypeId = Number(req.body.contentTypeId);
+            let content = ''
+
+            if(contentTypeId === 0)
+            {
+                content = req.body.content | '';
+            }
+            else
+            {
+                const documentContentTypes = await getDocumentContentTypes();
+
+                const isDocumentValid = documentContentTypes.some(e => e['Id'] === contentTypeId);
+
+                if(!isDocumentValid)
+                {
+                    return res.status(400).send("This content type id is not supported");
+                }
+
+                const blobId = randomUUID();
+
+                const file = req.file;
+                const fileName = file.originalname;
+                const fileContent = file.buffer;
+
+                if(fileName.length >= 50){
+                    return res.status(400).send("file name is limited at 50 chars");
+                }
+
+                const extension = getFileExtensions(fileName);
+                const mime = lookup(extension);
+
+                if(contentTypeId === 1 && extension !== 'pdf')
+                {
+                    return res.status(400).send("only pdf is supported in this content type");
+                }
+
+                // if content type is false, download is required
+                let download = contentTypeId === 2 ? true : false;
+
+                if(!mime)
+                {
+                    mime = 'application/octet-stream'
+                }
+
+                await uploadMedia(blobId, fileName, extension, mime, download, fileContent);
+                content = blobId;
+            }
+
+            await createContentSql(contentId, contentTypeId, documentId, content);
+
+            return res.status(200).json({
+                contentId,
+                contentTypeId,
+                documentId,
+                contentBody: content
+            });
+        }
+        catch (err)
+        {
+            return handleExceptionInResponse(res, err);
+        }
+    });
+
+router.delete('/:documentId/content/',
+    authorizedRoute,
+    verifyExistingDocument,
+    async (req,res) => {
+        try {
+            const documentId = req.document.Id;
+
+            const documentContents = await getContentsByDocumentIdSql(documentId);
+
+            for ( const documentContent of documentContents){
+                if(documentContent.contentTypeId !== 0)
+                {
+                    await deleteMedia(documentContent.ContentBody);
+                }
+                await deleteContentSql(documentContent.Id);
+            }
+            return res.sendStatus(200);
+        }
+        catch (err)
+        {
+            return handleExceptionInResponse(res, err);
+        }
+    });
 
 
 module.exports = router;
