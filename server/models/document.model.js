@@ -67,3 +67,15 @@ exports.getDocumentByIdSql = async (id) => {
 
     return result;
 }
+
+exports.deleteDocumentSql = async (id) => {
+    const pool = await sql.connect(sqlConfig);
+
+    await pool.request()
+        .input('Id', sql.UniqueIdentifier, id)
+        .execute('DeleteDocument');
+
+    await pool.close();
+
+    return;
+}
