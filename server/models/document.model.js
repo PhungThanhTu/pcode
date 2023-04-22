@@ -79,3 +79,18 @@ exports.deleteDocumentSql = async (id) => {
 
     return;
 }
+
+exports.getRoleDocumentSql = async (documentId, userId) => {
+    const pool = await sql.connect(sqlConfig);
+
+    const request = await pool.request()
+        .input('DocumentId', sql.UniqueIdentifier, documentId)
+        .input('UserId', sql.UniqueIdentifier, userId)
+        .query('exec GetRoleOnDocument @DocumentId, @UserId');
+    
+    await pool.close();
+    
+    const result = request.recordset;
+
+    return result;
+}

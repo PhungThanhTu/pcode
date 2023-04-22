@@ -6,7 +6,7 @@ const { getCourseByIdSql, getRoleInCourseSql } = require('../models/course.model
 const { createDocumentSql, linkDocumentWithCourseSql, getDocumentContentTypes, deleteDocumentSql } = require('../models/document.model');
 const { documentCreationSchema } = require('../schema/document.schema');
 const { uploadSingleFile } = require('../middlewares/media.middleware');
-const { verifyExistingDocument } = require('../middlewares/document.middleware');
+const { verifyExistingDocument, verifyRoleDocument } = require('../middlewares/document.middleware');
 const { getFileExtensions } = require('../utils/media.utils');
 const { lookup } = require('mime-types');
 const { uploadMedia, deleteMedia } = require('../models/media.model');
@@ -95,6 +95,7 @@ router.post(
     '/:documentId/content',
     authorizedRoute,
     verifyExistingDocument,
+    verifyRoleDocument(1),
     uploadSingleFile, 
     async (req,res) => 
     {
@@ -151,7 +152,7 @@ router.post(
 
             await createContentSql(contentId, contentTypeId, documentId, content);
 
-            return res.status(200).json({
+            return res.status(201).json({
                 contentId,
                 contentTypeId,
                 documentId,
@@ -168,6 +169,7 @@ router.delete(
     '/:documentId/content/',
     authorizedRoute,
     verifyExistingDocument,
+    verifyRoleDocument(1),
     async (req,res) => {
         try {
             const documentId = req.document.Id;
@@ -186,6 +188,7 @@ router.delete(
     '/:documentId',
     authorizedRoute,
     verifyExistingDocument,
+    verifyRoleDocument(1),
     async (req, res) => {
         const documentId = req.document.Id;
 

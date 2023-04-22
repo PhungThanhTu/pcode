@@ -1,7 +1,9 @@
 create procedure GetRoleOnDocument
-    @Id UNIQUEIDENTIFIER
+    @DocumentId UNIQUEIDENTIFIER,
+    @UserId UNIQUEIDENTIFIER
     as
-    select PlpRole from [dbo].[Document] d
+    select * from [dbo].[Document] d
         join [dbo].[DocumentCourse] dc on d.Id = dc.DocumentId
         join [dbo].[PlpCourseAuthorization] ca on dc.CourseId = ca.CourseId
-        where d.DocumentId = @Id
+        where d.Id = @DocumentId
+        and ca.UserId = @UserId
