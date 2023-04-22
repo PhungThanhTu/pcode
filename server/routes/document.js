@@ -3,7 +3,7 @@ var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
 const { authorizedRoute } = require('../middlewares/auth.middleware');
 const { getCourseByIdSql, getRoleInCourseSql } = require('../models/course.model');
-const { createDocumentSql, linkDocumentWithCourseSql, getDocumentContentTypes, deleteDocumentSql, updateDocumentSql } = require('../models/document.model');
+const { createDocumentSql, linkDocumentWithCourseSql, getDocumentContentTypes, deleteDocumentSql, updateDocumentSql, setDocumentPublicityAllCourseSql } = require('../models/document.model');
 const { documentCreationSchema, documentUpdateSchema } = require('../schema/document.schema');
 const { uploadSingleFile } = require('../middlewares/media.middleware');
 const { verifyExistingDocument, verifyRoleDocument } = require('../middlewares/document.middleware');
@@ -94,6 +94,28 @@ router.patch(
             return handleExceptionInResponse(res, err);
         }
     });
+
+router.post(
+    '/:documentId/publish',
+    authorizedRoute,
+    verifyExistingDocument,
+    verifyRoleDocument(0),
+    async (req, res) => {
+        try {
+            const documentId = req.params.documentId;
+            const publicity = req.query.publish === '1' ? 1 : 0;
+
+            console.log(publicity);
+            await setDocumentPublicityAllCourseSql(documentId, publicity);
+            
+            return res.sendStatus(200);
+        }
+        catch (err)
+        {
+            return handleExceptionInResponse(res, err);
+        }
+    }
+)
 
 router.get(
     '/:documentId',
