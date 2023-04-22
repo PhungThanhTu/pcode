@@ -3,8 +3,8 @@ var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
 const { authorizedRoute } = require('../middlewares/auth.middleware');
 const { getCourseByIdSql, getRoleInCourseSql } = require('../models/course.model');
-const { createDocumentSql, linkDocumentWithCourseSql, getDocumentContentTypes, deleteDocumentSql } = require('../models/document.model');
-const { documentCreationSchema } = require('../schema/document.schema');
+const { createDocumentSql, linkDocumentWithCourseSql, getDocumentContentTypes, deleteDocumentSql, updateDocumentSql } = require('../models/document.model');
+const { documentCreationSchema, documentUpdateSchema } = require('../schema/document.schema');
 const { uploadSingleFile } = require('../middlewares/media.middleware');
 const { verifyExistingDocument, verifyRoleDocument } = require('../middlewares/document.middleware');
 const { getFileExtensions } = require('../utils/media.utils');
@@ -69,6 +69,31 @@ router.post('/', authorizedRoute , async (req, res) => {
         return handleExceptionInResponse(res, err)
     }
 });
+
+router.patch(
+    '/:documentId', 
+    authorizedRoute,
+    verifyExistingDocument,
+    verifyRoleDocument(0),
+    async (req, res) => {
+        try {         
+            const documentId = req.params.documentId;
+            const documentUpdateRequest = req.body;
+
+            await documentUpdateSchema.validateAsync(documentUpdateRequest);
+
+            const title = documentUpdateRequest.title;
+            const description = documentUpdateRequest.description;
+
+            await updateDocumentSql(documentId, title, description);
+
+            return res.sendStatus(200);
+        }
+        catch (err)
+        {
+            return handleExceptionInResponse(res, err);
+        }
+    });
 
 router.get(
     '/:documentId',

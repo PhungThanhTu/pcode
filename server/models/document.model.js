@@ -94,3 +94,17 @@ exports.getRoleDocumentSql = async (documentId, userId) => {
 
     return result;
 }
+
+exports.updateDocumentSql = async (id, title, description) => {
+    const pool = await sql.connect(sqlConfig);
+
+    await pool.request()
+        .input('Id', sql.UniqueIdentifier, id)
+        .input('Title', sql.NVarChar(320), title)
+        .input('DocumentDescription', sql.NVarChar(640), description)
+        .execute('UpdateDocument');
+
+    await pool.close();
+
+    return;
+}
