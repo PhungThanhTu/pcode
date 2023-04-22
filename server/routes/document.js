@@ -1,18 +1,30 @@
 const { randomUUID } = require('crypto');
 var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
-const multer = require('multer');
 const { authorizedRoute } = require('../middlewares/auth.middleware');
 const { getCourseByIdSql, getRoleInCourseSql } = require('../models/course.model');
-const { createDocumentSql, linkDocumentWithCourseSql, getDocumentContentTypes } = require('../models/document.model');
+const { createDocumentSql, linkDocumentWithCourseSql, getDocumentContentTypes, deleteDocumentSql } = require('../models/document.model');
 const { documentCreationSchema } = require('../schema/document.schema');
 const { uploadSingleFile } = require('../middlewares/media.middleware');
-const { verifyExistingDocument } = require('../middlewares/document.middleware');
+const { verifyExistingDocument, verifyRoleDocument } = require('../middlewares/document.middleware');
 const { getFileExtensions } = require('../utils/media.utils');
 const { lookup } = require('mime-types');
 const { uploadMedia, deleteMedia } = require('../models/media.model');
 const { createContentSql, getContentsByDocumentIdSql, deleteContentSql } = require('../models/content.model');
 var router = express.Router();
+
+const deleteAllDocumentContents = async (documentId) => {
+
+    const documentContents = await getContentsByDocumentIdSql(documentId);
+
+    for ( const documentContent of documentContents){
+        if(documentContent.contentTypeId !== 0)
+        {
+            await deleteMedia(documentContent.ContentBody);
+        }
+        await deleteContentSql(documentContent.Id);
+    }
+}
 
 router.post('/', authorizedRoute , async (req, res) => {
     try 
@@ -50,8 +62,6 @@ router.post('/', authorizedRoute , async (req, res) => {
 
         await linkDocumentWithCourseSql(newDocumentId, newDocument.CourseId);
 
-
-
         return res.status(201).json(newDocument);
     }
     catch (err)
@@ -85,6 +95,7 @@ router.post(
     '/:documentId/content',
     authorizedRoute,
     verifyExistingDocument,
+    verifyRoleDocument(1),
     uploadSingleFile, 
     async (req,res) => 
     {
@@ -141,7 +152,7 @@ router.post(
 
             await createContentSql(contentId, contentTypeId, documentId, content);
 
-            return res.status(200).json({
+            return res.status(201).json({
                 contentId,
                 contentTypeId,
                 documentId,
@@ -158,19 +169,13 @@ router.delete(
     '/:documentId/content/',
     authorizedRoute,
     verifyExistingDocument,
+    verifyRoleDocument(1),
     async (req,res) => {
         try {
             const documentId = req.document.Id;
+            
+            await deleteAllDocumentContents(documentId);
 
-            const documentContents = await getContentsByDocumentIdSql(documentId);
-
-            for ( const documentContent of documentContents){
-                if(documentContent.contentTypeId !== 0)
-                {
-                    await deleteMedia(documentContent.ContentBody);
-                }
-                await deleteContentSql(documentContent.Id);
-            }
             return res.sendStatus(200);
         }
         catch (err)
@@ -179,5 +184,26 @@ router.delete(
         }
     });
 
+router.delete(
+    '/:documentId',
+    authorizedRoute,
+    verifyExistingDocument,
+    verifyRoleDocument(1),
+    async (req, res) => {
+        const documentId = req.document.Id;
+
+        try {
+            await deleteAllDocumentContents(documentId);
+            await deleteDocumentSql(documentId);
+
+            return res.sendStatus(200);
+        }
+        catch (err)
+        {
+            return handleExceptionInResponse(res, err);
+        }
+
+    }
+)
 
 module.exports = router;

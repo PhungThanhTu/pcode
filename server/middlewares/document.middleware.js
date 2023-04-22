@@ -1,6 +1,6 @@
 const { handleExceptionInResponse } = require("../exception");
 const joi = require('joi');
-const { getDocumentByIdSql } = require("../models/document.model");
+const { getDocumentByIdSql, getRoleDocumentSql } = require("../models/document.model");
 
 module.exports.verifyExistingDocument = async (req, res, next) => {
     try {
@@ -20,6 +20,26 @@ module.exports.verifyExistingDocument = async (req, res, next) => {
 
         req.document = document;
 
+        next();
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res, err);
+    }
+}
+
+module.exports.verifyRoleDocument = (...roles) => async (req, res, next) => {
+
+    try {
+        const documentId = req.params.documentId;
+        const identity = req.identity;
+        const allowedRole = roles;
+        const requestRole = await getRoleDocumentSql(documentId, identity);
+        console.log(JSON.stringify(requestRole));
+        if(requestRole.length === 0 || !allowedRole.some((role) => role === requestRole[0].Role))
+        {
+            return res.sendStatus(403);
+        }
         next();
     }
     catch (err)
