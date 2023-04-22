@@ -142,7 +142,7 @@ router.post(
     '/:documentId/content',
     authorizedRoute,
     verifyExistingDocument,
-    verifyRoleDocument(1),
+    verifyRoleDocument(0),
     uploadSingleFile, 
     async (req,res) => 
     {
