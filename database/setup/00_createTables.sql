@@ -18,50 +18,14 @@ create table Course
     courseSubject nvarchar(max),
     courseTheme nvarchar(max)
 )
-create table Exercise
-(
-    id UNIQUEIDENTIFIER PRIMARY KEY,
-    runtimeLimit int,
-    memoryLimit int,
-    scoreWeight int,
-    timeCreated smalldatetime
-)
-create table CourseExercise
-(
-    courseId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[Course](id),
-    exerciseId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[Exercise](id),
-    title nvarchar(max),
-    document nvarchar(max)
-)
-create table ProgrammingLanguage
-(
-    id int PRIMARY KEY,
-    languageName varchar(20),
-    fileExtension varchar(10),
+-- create table CourseExercise
+-- (
+--     courseId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[Course](id),
+--     exerciseId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[Exercise](id),
+--     title nvarchar(max),
+--     document nvarchar(max)
+-- )
 
-)
-insert into [dbo].[ProgrammingLanguage] 
-(id,languageName,fileExtension)
-VALUES 
-(1,'c','c'),
-(2,'cpp','cpp')
-
-create table SampleSourceCode
-(
-    exerciseId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[Exercise](id) NOT NULL,
-    programmingLanguageId int FOREIGN KEY REFERENCES [dbo].[ProgrammingLanguage](id) NOT NULL,
-    sourceCode nvarchar(max),
-    CONSTRAINT PK_SampleSourceCode PRIMARY KEY (exerciseId,programmingLanguageId)
-)
-create table MetaTestCase
-(
-    id UNIQUEIDENTIFIER PRIMARY KEY,
-    exercise UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[Exercise](id) NOT NULL,
-    input nvarchar(max),
-    expectedOutput nvarchar(max),
-    scoreWeight int,
-    visibility bit
-)
 create table Submission
 (
     id UNIQUEIDENTIFIER PRIMARY KEY,
