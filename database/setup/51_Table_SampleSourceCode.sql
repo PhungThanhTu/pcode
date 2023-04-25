@@ -1,3 +1,6 @@
+-- remove legacy table SampleSourceCode
+-- drop table SampleSourceCode
+
 create table SampleSourceCode
 (
     exerciseId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[Exercise](id) NOT NULL,

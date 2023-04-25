@@ -1,6 +1,3 @@
--- remove legacy Exercise
--- drop table Exercise
-
 create table Exercise
 (
     Id UNIQUEIDENTIFIER PRIMARY KEY,
@@ -8,6 +5,7 @@ create table Exercise
     MemoryLimit int,
     ScoreWeight int,
     TimeCreated smalldatetime,
+    HaveDeadline bit,
     Deadline datetime2,
     StrictDeadline bit,
     ManualPercentage float,

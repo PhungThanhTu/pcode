@@ -1,6 +1,3 @@
--- remove legacy table Programming Language
--- drop table ProgrammingLanguage
-
 create table ProgrammingLanguage
 (
     Id int PRIMARY KEY,
@@ -19,8 +16,8 @@ VALUES
 'C',
 'c',
 '1',
-'./$FILENAME',
-'/usr/bin/g++ -Wfatal-errors -w -o $SUBMISSION_ID $SUBMISSION_ID.$EXTENSION'),
+'/usr/bin/g++ -Wfatal-errors -w -o $SUBMISSION_ID $SUBMISSION_ID.$EXTENSION',
+'./$FILENAME'),
 (2,
 'cpp',
 'C++',
