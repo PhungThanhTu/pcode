@@ -13,6 +13,8 @@ const { uploadMedia, deleteMedia } = require('../models/media.model');
 const { createContentSql, getContentsByDocumentIdSql, deleteContentSql } = require('../models/content.model');
 var router = express.Router();
 
+router.use(authorizedRoute);
+
 const deleteAllDocumentContents = async (documentId) => {
 
     const documentContents = await getContentsByDocumentIdSql(documentId);
@@ -26,7 +28,7 @@ const deleteAllDocumentContents = async (documentId) => {
     }
 }
 
-router.post('/', authorizedRoute , async (req, res) => {
+router.post('/', async (req, res) => {
     try 
     {
         const identity = req.identity;
@@ -72,7 +74,6 @@ router.post('/', authorizedRoute , async (req, res) => {
 
 router.patch(
     '/:documentId', 
-    authorizedRoute,
     verifyExistingDocument,
     verifyRoleDocument(0),
     async (req, res) => {
@@ -97,7 +98,6 @@ router.patch(
 
 router.post(
     '/:documentId/publish',
-    authorizedRoute,
     verifyExistingDocument,
     verifyRoleDocument(0),
     async (req, res) => {
@@ -119,7 +119,6 @@ router.post(
 
 router.get(
     '/:documentId',
-    authorizedRoute,
     verifyExistingDocument,
     async (req, res) => {
         try {
@@ -140,7 +139,6 @@ router.get(
 
 router.post(
     '/:documentId/content',
-    authorizedRoute,
     verifyExistingDocument,
     verifyRoleDocument(0),
     uploadSingleFile, 
@@ -214,7 +212,6 @@ router.post(
 
 router.delete(
     '/:documentId/content/',
-    authorizedRoute,
     verifyExistingDocument,
     verifyRoleDocument(1),
     async (req,res) => {
@@ -233,7 +230,6 @@ router.delete(
 
 router.delete(
     '/:documentId',
-    authorizedRoute,
     verifyExistingDocument,
     verifyRoleDocument(1),
     async (req, res) => {
