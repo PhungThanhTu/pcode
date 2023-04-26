@@ -11,9 +11,14 @@ const { getFileExtensions } = require('../utils/media.utils');
 const { lookup } = require('mime-types');
 const { uploadMedia, deleteMedia } = require('../models/media.model');
 const { createContentSql, getContentsByDocumentIdSql, deleteContentSql } = require('../models/content.model');
+
+var exerciseRouter = require('./exercise');
+
 var router = express.Router();
 
 router.use(authorizedRoute);
+
+router.use('/:documentId/exercise/', exerciseRouter);
 
 const deleteAllDocumentContents = async (documentId) => {
 
