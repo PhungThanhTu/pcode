@@ -1,14 +1,86 @@
 var express = require('express');
+const { randomUUID } = require('crypto');
+const { handleExceptionInResponse } = require('../exception');
 const { authorizedRoute } = require('../middlewares/auth.middleware');
-const { verifyExistingDocument } = require('../middlewares/document.middleware');
+const { verifyExistingDocument, verifyRoleDocument } = require('../middlewares/document.middleware');
+const { exerciseCreateSchema, exerciseEditSchema } = require('../schema/exercise.schema');
+const { createExerciseInDocumentSql, updateExerciseInDocumentSql } = require('../models/exercise.model');
 
 var router = express.Router({ mergeParams: true });
 
+router.use(authorizedRoute);
 router.use(verifyExistingDocument);
 
-router.get('/', (req,res) => {
-    console.log(req.params);
-    res.send("well done");
+router.post('/', verifyRoleDocument(0), async (req,res) => {
+    try {
+        const documentId = req.params.documentId;
+        const exerciseId = randomUUID();
+
+        const createExerciseRequest = req.body;
+        const {
+            runtimeLimit,
+            memoryLimit,
+            scoreWeight,
+            manualPercentage
+        } = await exerciseCreateSchema.validateAsync(createExerciseRequest);
+
+        await createExerciseInDocumentSql(
+            exerciseId, 
+            documentId, 
+            runtimeLimit, 
+            memoryLimit, 
+            scoreWeight, 
+            manualPercentage);
+
+        return res.status(201).json({
+            exerciseId,
+            runtimeLimit,
+            memoryLimit,
+            scoreWeight,
+            manualPercentage
+        });
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res, err);
+    }
 });
+
+router.patch('/', verifyRoleDocument(0), async (req, res) => {
+    try {
+        const documentId = req.params.documentId;
+
+        const updateExerciseRequest = req.body;
+
+        const {
+            runtimeLimit,
+            memoryLimit,
+            scoreWeight,
+            manualPercentage,
+            haveDeadline,
+            deadline,
+            strictDeadline
+        } = await exerciseEditSchema.validateAsync(updateExerciseRequest);
+
+        await updateExerciseInDocumentSql(
+            documentId,
+            runtimeLimit,
+            memoryLimit,
+            scoreWeight,
+            manualPercentage,
+            haveDeadline,
+            deadline,
+            strictDeadline
+        );
+
+        return res.sendStatus(200);
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res, err);
+    }
+});
+
+router.get('/')
 
 module.exports = router;
