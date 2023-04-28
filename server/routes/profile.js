@@ -18,6 +18,7 @@ router.get('/',authorizedRoute,async (req,res) => {
         console.log(userProfile);
 
         res.status(200).json({
+            id: identity,
             username: userProfile.username,
             email: userProfile.email,
             fullName: userProfile.fullName,
