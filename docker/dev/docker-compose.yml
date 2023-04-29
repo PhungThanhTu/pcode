@@ -42,7 +42,7 @@ services:
       - MSSQL_DATABASE=plp
       - BCRYPT_SECRET=NrmEcrfBQloi54K2sK8e
       - JWT_SECRET=OfAt39oyrmyMf1slgllI
-      - JWT_LIFETIME=5m
+      - JWT_LIFETIME=1440m
       - REFRESH_TOKEN_LIFETIME=7
       - AZURE_BLOB_CONSTRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;
     volumes:
