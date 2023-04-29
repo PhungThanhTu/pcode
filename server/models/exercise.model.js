@@ -50,3 +50,18 @@ exports.updateExerciseInDocumentSql = async (
     await pool.close();
 
 }
+
+exports.getExerciseInDocumentSql = async (
+    documentId
+) => {
+    const pool = await sql.connect(sqlConfig);
+
+    const request = await pool.request()
+        .input('DocumentId', sql.UniqueIdentifier, documentId)
+        .query('exec GetExerciseByDocumentId @DocumentId');
+    
+    await pool.close();
+
+    const result = request.recordset[0];
+    return result;
+}

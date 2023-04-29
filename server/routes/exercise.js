@@ -4,7 +4,7 @@ const { handleExceptionInResponse } = require('../exception');
 const { authorizedRoute } = require('../middlewares/auth.middleware');
 const { verifyExistingDocument, verifyRoleDocument } = require('../middlewares/document.middleware');
 const { exerciseCreateSchema, exerciseEditSchema } = require('../schema/exercise.schema');
-const { createExerciseInDocumentSql, updateExerciseInDocumentSql } = require('../models/exercise.model');
+const { createExerciseInDocumentSql, updateExerciseInDocumentSql, getExerciseInDocumentSql } = require('../models/exercise.model');
 
 var router = express.Router({ mergeParams: true });
 
@@ -81,6 +81,19 @@ router.patch('/', verifyRoleDocument(0), async (req, res) => {
     }
 });
 
-router.get('/')
+router.get('/', verifyRoleDocument(0,1), async (req, res) => {
+    try {
+        const documentId = req.params.documentId;
+        const response = await getExerciseInDocumentSql(documentId);
+
+        if(!response)
+            return res.sendStatus(404);
+        return res.status(200).json(response);
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res, err);
+    }
+})
 
 module.exports = router;

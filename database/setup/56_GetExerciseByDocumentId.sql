@@ -8,6 +8,7 @@ create procedure GetExerciseByDocymentId
             ScoreWeight,
             TimeCreated,
             HaveDeadline,
+            Deadline,
             StrictDeadline,
             ManualPercentage
         from [dbo].[Exercise] e

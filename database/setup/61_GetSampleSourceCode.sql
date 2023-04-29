@@ -7,5 +7,3 @@ create procedure GetSampleSourceCode
     where
         exerciseId = @ExerciseId 
         and programmingLanguageId = @ProgrammingLanguageId
-
-select * from [dbo].[Document]
