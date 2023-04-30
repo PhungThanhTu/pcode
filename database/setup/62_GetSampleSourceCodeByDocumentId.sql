@@ -3,6 +3,7 @@ create procedure GetSampleSourceCodeByDocumentId
     @ProgrammingLanguageId INT
     as
         select
+            DE.exerciseId,
             programmingLanguageId,
             sourceCode
         from [dbo].[SampleSourceCode] SSC

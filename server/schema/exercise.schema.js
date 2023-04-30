@@ -61,3 +61,9 @@ exports.exerciseEditSchema = joi.object(
             .default(false)
     }
 )
+
+exports.sampleSourceCodeSchema = joi.object(
+    {
+        sampleSourceCode: joi.string().allow('').required()
+    }
+)

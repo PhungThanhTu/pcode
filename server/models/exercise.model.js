@@ -65,3 +65,37 @@ exports.getExerciseInDocumentSql = async (
     const result = request.recordset[0];
     return result;
 }
+
+exports.mergeSampleSourceCodeInDocumentSql = async (
+    documentId, 
+    programmingLanguageId, 
+    sourceCode) => {
+    const pool = await sql.connect(sqlConfig);
+
+    await pool.request()
+        .input('DocumentId', sql.UniqueIdentifier, documentId)
+        .input('ProgrammingLanguageId', sql.Int, programmingLanguageId)
+        .input('SourceCode', sql.NVarChar, sourceCode)
+        .execute('MergeSampleSourceCodeByDocumentId');
+    
+    await pool.close();
+
+    return;
+}
+
+exports.getSampleSourceCodeInDocumentSql = async (
+    documentId,
+    programmingLanguageId
+) => {
+    const pool = await sql.connect(sqlConfig);
+
+    const request = await pool.request()
+        .input('DocumentId', sql.UniqueIdentifier, documentId)
+        .input('ProgrammingLanguageId', sql.Int, programmingLanguageId)
+        .query('exec GetSampleSourceCodeByDocumentId @DocumentId, @ProgrammingLanguageId');
+    
+    await pool.close();
+
+    const result = request.recordset[0];
+    return result;
+}
