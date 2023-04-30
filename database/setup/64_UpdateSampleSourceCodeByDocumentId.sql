@@ -1,4 +1,4 @@
-create procedure CreateSampleSourceCodeByDocumentId
+create procedure UpdateSampleSourceCodeByDocumentId
     @DocumentId UNIQUEIDENTIFIER,
     @ProgrammingLanguageId INT,
     @SourceCode NVARCHAR(MAX)
