@@ -1,4 +1,4 @@
-create procedure GetExerciseByDocymentId
+create procedure GetExerciseByDocumentId
     @DocumentId UNIQUEIDENTIFIER
     AS
         select 
