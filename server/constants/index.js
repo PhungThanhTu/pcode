@@ -10,8 +10,16 @@ const defaultExerciseConfiguration = {
     DEFAULT_MANUAL_PERCENTAGE: 0
 }
 
+const defaultTestcaseConfiguration = {
+    DEFAULT_INPUT: '',
+    DEFAULT_OUTPUT: '',
+    DEFAULT_SCORE_WEIGHT: 1,
+    DEFAULT_VISIBILITY: true
+}
+
 
 module.exports = {
     documentTypes,
-    defaultExerciseConfiguration
+    defaultExerciseConfiguration,
+    defaultTestcaseConfiguration
 }
