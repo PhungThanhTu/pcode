@@ -1,7 +1,7 @@
 var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
 const { verifyExistingDocument, verifyRoleDocument } = require('../middlewares/document.middleware');
-const { getTestcaseMaxIdByDocumentIdSql, getTestCaseNewOrderByDocumentIdSql } = require('../models/testcases.model');
+const { getTestcaseMaxIdByDocumentIdSql, getTestCaseNewOrderByDocumentIdSql, createTestCaseInDocumentSql, getTestCasesByDocumentIdSql } = require('../models/testcases.model');
 const { testCaseSchema } = require('../schema/testcases.schema');
 
 var router = express.Router({ mergeParams: true });
@@ -20,10 +20,21 @@ router.post('/', async (req, res) => {
             visibility
         } = await testCaseSchema.validateAsync(testCaseRequest);
 
-        const testCaseId = await getTestcaseMaxIdByDocumentIdSql(documentId);
-        const testCaseOrder = await getTestCaseNewOrderByDocumentIdSql(documentId);
+        const maxId = await getTestcaseMaxIdByDocumentIdSql(documentId);
+        const maxOrder = await getTestCaseNewOrderByDocumentIdSql(documentId);
 
-        return res.json({
+        const testCaseId = maxId + 1;
+        const testCaseOrder = maxOrder + 1;
+
+        await createTestCaseInDocumentSql(testCaseId, 
+            documentId,
+            input,
+            output,
+            scoreWeight,
+            visibility,
+            testCaseOrder);
+
+        return res.status(201).json({
             id: testCaseId,
             order: testCaseOrder,
             input,
@@ -31,6 +42,20 @@ router.post('/', async (req, res) => {
             scoreWeight,
             visibility
         });
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res, err);
+    }
+})
+
+router.get('/', async (req, res) => {
+    try {
+        const documentId = req.params.documentId;
+
+        const response = await getTestCasesByDocumentIdSql(documentId);
+
+        return res.status(200).json(response);
     }
     catch (err)
     {

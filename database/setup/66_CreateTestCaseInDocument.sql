@@ -20,7 +20,7 @@ create procedure CreateTestCaseInDocument
             Visibility,
             TestOrder
         )
-        VALUESi
+        VALUES
         (
             @Id,
             @ExerciseId,
@@ -29,4 +29,4 @@ create procedure CreateTestCaseInDocument
             @ScoreWeight,
             @Visibility,
             @TestOrder
-        )        
+        )
