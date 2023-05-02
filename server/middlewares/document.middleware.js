@@ -40,6 +40,9 @@ module.exports.verifyRoleDocument = (...roles) => async (req, res, next) => {
         {
             return res.sendStatus(403);
         }
+
+        req.role = requestRole[0].Role;
+
         next();
     }
     catch (err)
