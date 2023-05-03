@@ -5,6 +5,7 @@ const { authorizedRoute } = require('../middlewares/auth.middleware');
 const { verifyExistingDocument, verifyRoleDocument } = require('../middlewares/document.middleware');
 const { exerciseCreateSchema, exerciseEditSchema, sampleSourceCodeSchema } = require('../schema/exercise.schema');
 const { createExerciseInDocumentSql, updateExerciseInDocumentSql, getExerciseInDocumentSql, mergeSampleSourceCodeInDocumentSql, getSampleSourceCodeInDocumentSql } = require('../models/exercise.model');
+const { getProgrammingLanguagesSql } = require('../models/submission.model');
 
 var router = express.Router({ mergeParams: true });
 
@@ -101,14 +102,11 @@ router.get('/sample', verifyRoleDocument(0, 1), async (req, res) => {
         const documentId = req.params.documentId;
         const programmingLanguageId = Number(req.query.programmingLanguage);
 
-        const programmingLanguages = [
-            1,
-            2
-        ]
+        const programmingLanguages = await getProgrammingLanguagesSql();
 
         if(!programmingLanguages.includes(programmingLanguageId))
         {
-            return res.status(404).send("programming language not supported");
+            return res.status(403).send("programming language not supported");
         }
 
         const response = await getSampleSourceCodeInDocumentSql(documentId, programmingLanguageId);

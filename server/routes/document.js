@@ -14,6 +14,7 @@ const { createContentSql, getContentsByDocumentIdSql, deleteContentSql } = requi
 
 var exerciseRouter = require('./exercise');
 var testcaseRouter = require('./testcase');
+var submissionRouter = require('./submission');
 
 var router = express.Router();
 
@@ -21,7 +22,9 @@ router.use(authorizedRoute);
 
 router.use('/:documentId/exercise/', exerciseRouter);
 
-router.use('/:documentId/testcase', testcaseRouter);
+router.use('/:documentId/testcase/', testcaseRouter);
+
+router.use('/:documentId/submission/', submissionRouter);
 
 const deleteAllDocumentContents = async (documentId) => {
 
