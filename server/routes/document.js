@@ -14,6 +14,7 @@ const { createContentSql, getContentsByDocumentIdSql, deleteContentSql } = requi
 
 var exerciseRouter = require('./exercise');
 var testcaseRouter = require('./testcase');
+var submissionRouter = require('./submission');
 
 var router = express.Router();
 
@@ -21,7 +22,9 @@ router.use(authorizedRoute);
 
 router.use('/:documentId/exercise/', exerciseRouter);
 
-router.use('/:documentId/testcase', testcaseRouter);
+router.use('/:documentId/testcase/', testcaseRouter);
+
+router.use('/:documentId/submission/', submissionRouter);
 
 const deleteAllDocumentContents = async (documentId) => {
 
@@ -153,6 +156,7 @@ router.post(
     async (req,res) => 
     {
         try {
+
             const documentId = req.params.documentId;
             const contentId = randomUUID();
             const contentTypeId = Number(req.body.contentTypeId);
@@ -161,8 +165,6 @@ router.post(
             if(contentTypeId === 0)
             {
                 content = req.body.content;
-                console.log('Content is:');
-                console.log(content);
                 await createContentSql(contentId, contentTypeId, documentId, content);
                 return res.status(201).json({
                     contentId,
@@ -230,10 +232,10 @@ router.post(
 router.delete(
     '/:documentId/content/',
     verifyExistingDocument,
-    verifyRoleDocument(1),
+    verifyRoleDocument(0),
     async (req,res) => {
         try {
-            const documentId = req.document.Id;
+            const documentId = req.params.documentId;
             
             await deleteAllDocumentContents(documentId);
 
@@ -248,7 +250,7 @@ router.delete(
 router.delete(
     '/:documentId',
     verifyExistingDocument,
-    verifyRoleDocument(1),
+    verifyRoleDocument(0),
     async (req, res) => {
         const documentId = req.document.Id;
 

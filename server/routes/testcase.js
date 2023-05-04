@@ -7,8 +7,9 @@ const { testCaseSchema } = require('../schema/testcases.schema');
 var router = express.Router({ mergeParams: true });
 
 router.use(verifyExistingDocument);
+router.use(verifyRoleDocument(0))
 
-router.post('/', verifyRoleDocument(0), async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const documentId = req.params.documentId;
         const testCaseRequest = req.body;
@@ -49,7 +50,7 @@ router.post('/', verifyRoleDocument(0), async (req, res) => {
     }
 })
 
-router.get('/', verifyRoleDocument(0,1), async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const documentId = req.params.documentId;
         const role = req.role;
@@ -65,7 +66,7 @@ router.get('/', verifyRoleDocument(0,1), async (req, res) => {
     }
 })
 
-router.get('/:id', verifyRoleDocument(0,1), async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
         const documentId = req.params.documentId;
         const id = req.params.id;
@@ -81,7 +82,7 @@ router.get('/:id', verifyRoleDocument(0,1), async (req, res) => {
     }
 })
 
-router.patch('/:id', verifyRoleDocument(0), async (req, res) => {
+router.patch('/:id', async (req, res) => {
     try {
         console.log('Getting ');
         const documentId = req.params.documentId;
@@ -115,7 +116,7 @@ router.patch('/:id', verifyRoleDocument(0), async (req, res) => {
     }
 })
 
-router.post('/swap', verifyRoleDocument(0), async (req, res) => {
+router.post('/swap', async (req, res) => {
     try {
         const documentId = req.params.documentId;
         const order1 = req.query.order1;
@@ -140,7 +141,7 @@ router.post('/swap', verifyRoleDocument(0), async (req, res) => {
     }
 })
 
-router.delete('/:id' , verifyRoleDocument(0), async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
         const documentId = req.params.documentId;
         const id = req.params.id;
