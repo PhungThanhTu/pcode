@@ -57,6 +57,8 @@ exports.checkOwnerSubmissionSql = async (
         .input('SubmissionId', sql.UniqueIdentifier, submissionId)
         .query('exec CheckOwnerSubmission @UserId, @SubmissionId')
     
+    await pool.close();
+    
     const result = request.recordset[0];
 
     if(!result)
@@ -82,7 +84,32 @@ exports.getSingleSubmissionSql = async (submissionId) => {
         .input('SubmissionId', sql.UniqueIdentifier, submissionId)
         .query('exec GetSingleSubmission @SubmissionId')
     
+    await pool.close();
+
     const result = request.recordset[0];
+
+    return result;
+}
+
+exports.deleteSubmissionByIdSql = async (submissionId) => {
+    const pool = await sql.connect(sqlConfig);
+
+    await pool.request()
+        .input('SubmissionId', sql.UniqueIdentifier, submissionId)
+        .execute('DeleteSubmissionById');
+    await pool.close();
+}
+
+exports.getStudentMarkedSubmissionsInDocumentSql = async (documentId) => {
+    const pool = await sql.connect(sqlConfig);
+
+    const request = await pool.request()
+        .input('DocumentId', sql.UniqueIdentifier, documentId)
+        .query('exec GetStudentMarkedSubmissionsInDocument @DocumentId');
+    
+    await pool.close();
+
+    const result = request.recordset;
 
     return result;
 }

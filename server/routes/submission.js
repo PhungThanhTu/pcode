@@ -1,16 +1,16 @@
 var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
 const { authorizedRoute } = require('../middlewares/auth.middleware');
-const { verifyExistingDocument } = require('../middlewares/document.middleware');
+const { verifyExistingDocument, verifyRoleDocument } = require('../middlewares/document.middleware');
 const { submissionCreationSchema } = require('../schema/submission.schema');
 const { randomUUID } = require('crypto');
-const { getProgrammingLanguagesSql, createSubmissionInDocumentSql, getMySubmissionInDocumentSql, checkOwnerSubmissionSql, markSubmissionSql, getSingleSubmissionSql } = require('../models/submission.model');
+const { getProgrammingLanguagesSql, createSubmissionInDocumentSql, getMySubmissionInDocumentSql, checkOwnerSubmissionSql, markSubmissionSql, getSingleSubmissionSql, deleteSubmissionByIdSql, getStudentMarkedSubmissionsInDocumentSql } = require('../models/submission.model');
 var router = express.Router({mergeParams: true});
 
 router.use(authorizedRoute);
 router.use(verifyExistingDocument);
 
-router.post('/', async (req,res) => {
+router.post('/', verifyRoleDocument(0,1), async (req,res) => {
     try {
         const userId = req.identity;
         const id = randomUUID();
@@ -43,7 +43,7 @@ router.post('/', async (req,res) => {
     }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', verifyRoleDocument(0,1), async (req, res) => {
     try {
         const userId = req.identity;
         const documentId = req.params.documentId;
@@ -59,7 +59,20 @@ router.get('/', async (req, res) => {
         
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/manage', verifyRoleDocument(0), async (req, res) => {
+    try {
+        const documentId = req.params.documentId;
+        const submissions = await getStudentMarkedSubmissionsInDocumentSql(documentId);
+
+        return res.json(submissions);
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res, err);
+    }
+})
+
+router.get('/:id', verifyRoleDocument(0,1), async (req, res) => {
     try {
         const userId = req.identity;
         const submissionId = req.params.id;
@@ -82,7 +95,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.post('/mark/:id', async (req, res) => {
+router.post('/mark/:id', verifyRoleDocument(0,1), async (req, res) => {
     try {
         const userId = req.identity;
         const submissionId = req.params.id;
@@ -104,5 +117,30 @@ router.post('/mark/:id', async (req, res) => {
         return handleExceptionInResponse(res, err);
     }
 });
+
+router.delete('/:id', verifyRoleDocument(0,1), async (req, res) => {
+    try {
+        const userId = req.identity;
+        const submissionId = req.params.id;
+
+        const isOwner = await checkOwnerSubmissionSql(submissionId, userId);
+
+        console.log(isOwner);
+        if(!isOwner)
+        {
+            return res.sendStatus(404);
+        }
+
+        await deleteSubmissionByIdSql(submissionId);
+
+        return res.sendStatus(200);
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res, err);
+    }
+});
+
+
 
 module.exports = router;
