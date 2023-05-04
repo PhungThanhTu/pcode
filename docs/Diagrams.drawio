@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-05-03T03:00:45.641Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58" etag="zuev7VdaAn5xyviWIec-" version="21.1.8" type="device" pages="18">
+<mxfile host="app.diagrams.net" modified="2023-05-03T14:33:24.463Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58" etag="_YHZDBtSvz_UBOwRrMwU" version="21.1.8" type="device" pages="19">
   <diagram id="kOFSm71Pu6C5OlaOIeIC" name="High level system design">
     <mxGraphModel dx="2654" dy="1722" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -1847,7 +1847,7 @@
     </mxGraphModel>
   </diagram>
   <diagram name="UI&lt;DocumentExerciseForStudent&gt;" id="e6C1Vv_Ba7QuCAUUWp-1">
-    <mxGraphModel dx="596" dy="-711" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="795" dy="-582" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="FploMmGJScUoyTnQCh4Q-0" />
         <mxCell id="FploMmGJScUoyTnQCh4Q-1" parent="FploMmGJScUoyTnQCh4Q-0" />
@@ -1900,7 +1900,7 @@
           <mxGeometry y="30" width="530" height="30" as="geometry" />
         </mxCell>
         <mxCell id="hcyVp46Kct2t3I_bPhNr-2" value="Document title - sample source code editor" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="hcyVp46Kct2t3I_bPhNr-102">
-          <mxGeometry y="30" width="530" height="30" as="geometry" />
+          <mxGeometry x="1.36" y="30" width="530" height="30" as="geometry" />
         </mxCell>
         <mxCell id="hcyVp46Kct2t3I_bPhNr-4" value="Submissions" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="hcyVp46Kct2t3I_bPhNr-102">
           <mxGeometry width="81.36" height="30" as="geometry" />
@@ -1923,9 +1923,6 @@
         <mxCell id="hcyVp46Kct2t3I_bPhNr-16" value="f6d4b987-4192-4d7e-b3c1-d857ce7a5e9b" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=6;" vertex="1" parent="hcyVp46Kct2t3I_bPhNr-29">
           <mxGeometry x="9.319999999999993" width="140.68" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="hcyVp46Kct2t3I_bPhNr-17" value="10" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;" vertex="1" parent="hcyVp46Kct2t3I_bPhNr-29">
-          <mxGeometry x="150" width="60" height="30" as="geometry" />
-        </mxCell>
         <mxCell id="hcyVp46Kct2t3I_bPhNr-28" value="" style="group" vertex="1" connectable="0" parent="hcyVp46Kct2t3I_bPhNr-29">
           <mxGeometry x="240" y="10" width="10" height="10" as="geometry" />
         </mxCell>
@@ -1943,6 +1940,9 @@
         </mxCell>
         <mxCell id="hcyVp46Kct2t3I_bPhNr-101" value="" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn1.iconfinder.com/data/icons/material-core/18/check-128.png" vertex="1" parent="hcyVp46Kct2t3I_bPhNr-29">
           <mxGeometry x="220" y="10" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="hcyVp46Kct2t3I_bPhNr-104" value="" style="html=1;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;shadow=0;dashed=0;strokeWidth=2;shape=mxgraph.ios7.misc.loading_circle;" vertex="1" parent="hcyVp46Kct2t3I_bPhNr-29">
+          <mxGeometry x="170" y="4.319999999999993" width="21.36" height="21.36" as="geometry" />
         </mxCell>
         <mxCell id="hcyVp46Kct2t3I_bPhNr-30" value="" style="group" vertex="1" connectable="0" parent="hcyVp46Kct2t3I_bPhNr-46">
           <mxGeometry y="30" width="260" height="30" as="geometry" />
@@ -2109,8 +2109,70 @@
         <mxCell id="hcyVp46Kct2t3I_bPhNr-100" value="Pending..." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="hcyVp46Kct2t3I_bPhNr-88">
           <mxGeometry width="260" height="90" as="geometry" />
         </mxCell>
+        <mxCell id="hcyVp46Kct2t3I_bPhNr-105" value="Please note that the score displaying is the score provided by automated judging system, not total score of the exercise" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;" vertex="1" parent="hcyVp46Kct2t3I_bPhNr-102">
+          <mxGeometry x="1.36" y="60" width="268.64" height="30" as="geometry" />
+        </mxCell>
         <mxCell id="hcyVp46Kct2t3I_bPhNr-103" value="Submitting ..." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="FploMmGJScUoyTnQCh4Q-1">
           <mxGeometry x="340" y="1960" width="150" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="vdCp892WX5yzZrEe7CNe" name="Page-19">
+    <mxGraphModel dx="1004" dy="1755" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ZGpRGBOmxWaqYBq0QeuJ-2" value="payment form" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="730" y="400" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZGpRGBOmxWaqYBq0QeuJ-8" value="ngif(paymentMethod === 0)&lt;br&gt;&amp;lt;field&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="460" width="310" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="ZGpRGBOmxWaqYBq0QeuJ-9" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="500" y="130" width="310" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="ZGpRGBOmxWaqYBq0QeuJ-6" value="thanh toán khi nhận hàng" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="ZGpRGBOmxWaqYBq0QeuJ-9">
+          <mxGeometry width="310" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZGpRGBOmxWaqYBq0QeuJ-7" value="Thanh toán bằng thẻ" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="ZGpRGBOmxWaqYBq0QeuJ-9">
+          <mxGeometry y="60" width="310" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZGpRGBOmxWaqYBq0QeuJ-14" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="ZGpRGBOmxWaqYBq0QeuJ-9">
+          <mxGeometry x="30" y="15" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ZGpRGBOmxWaqYBq0QeuJ-15" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="ZGpRGBOmxWaqYBq0QeuJ-9">
+          <mxGeometry x="30" y="75" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ZGpRGBOmxWaqYBq0QeuJ-10" value="payment methods" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="595" y="50" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZGpRGBOmxWaqYBq0QeuJ-11" value="paymentMethod: 0" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="870" y="130" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ZGpRGBOmxWaqYBq0QeuJ-12" value="enum PaymentMethods {&lt;br&gt;&lt;br&gt;}" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="920" y="-50" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ZGpRGBOmxWaqYBq0QeuJ-13" value="ng-if(paymentMethod === 0)&lt;br&gt;&amp;lt;payment-cod-form&amp;gt;&lt;br&gt;ig-if(paymentMethod === 1)&lt;br&gt;&amp;lt;payment-atm-form&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="250" width="310" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ZGpRGBOmxWaqYBq0QeuJ-18" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="ZGpRGBOmxWaqYBq0QeuJ-14">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="320" y="200" as="sourcePoint" />
+            <mxPoint x="370" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZGpRGBOmxWaqYBq0QeuJ-19" value="onClick = () =&amp;gt; {&lt;br&gt;paymentMethod = 0&lt;br&gt;}" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="220" y="130" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ZGpRGBOmxWaqYBq0QeuJ-20" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="ZGpRGBOmxWaqYBq0QeuJ-15">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="340" y="220" as="sourcePoint" />
+            <mxPoint x="380" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZGpRGBOmxWaqYBq0QeuJ-21" value="onClick = () =&amp;gt; {&lt;br&gt;paymentMethod = 1&lt;br&gt;}" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="240" y="210" width="140" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

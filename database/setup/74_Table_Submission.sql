@@ -8,5 +8,6 @@ create table Submission
     ManualScore float,
     Score float,
     TimeCreated datetime2,
-    Choice bit
+    Choice bit,
+    Pending bit
 )

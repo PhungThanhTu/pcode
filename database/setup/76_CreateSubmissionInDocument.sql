@@ -13,14 +13,18 @@ create procedure CreateSubmissionInDocument
         Id,
         ExerciseId,
         ProgrammingLanguageId,
-        SourceCode
+        SourceCode,
+        Pending,
+        TimeCreated
     )
     VALUES
     (
         @Id,
         @ExerciseId,
         @ProgrammingLanguageId,
-        @SourceCode
+        @SourceCode,
+        1,
+        GETDATE()
     )
     INSERT INTO [dbo].[SubmissionUser]
     (

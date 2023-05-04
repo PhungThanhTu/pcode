@@ -4,7 +4,7 @@ const { authorizedRoute } = require('../middlewares/auth.middleware');
 const { verifyExistingDocument } = require('../middlewares/document.middleware');
 const { submissionCreationSchema } = require('../schema/submission.schema');
 const { randomUUID } = require('crypto');
-const { getProgrammingLanguagesSql, createSubmissionInDocumentSql } = require('../models/submission.model');
+const { getProgrammingLanguagesSql, createSubmissionInDocumentSql, getMySubmissionInDocumentSql, checkOwnerSubmissionSql, markSubmissionSql, getSingleSubmissionSql } = require('../models/submission.model');
 var router = express.Router({mergeParams: true});
 
 router.use(authorizedRoute);
@@ -36,6 +36,68 @@ router.post('/', async (req,res) => {
             programmingLanguageId,
             sourceCode
         })
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res, err);
+    }
+});
+
+router.get('/', async (req, res) => {
+    try {
+        const userId = req.identity;
+        const documentId = req.params.documentId;
+
+        const result = await getMySubmissionInDocumentSql(documentId, userId);
+
+        return res.json(result);
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res, err);
+    }
+        
+});
+
+router.get('/:id', async (req, res) => {
+    try {
+        const userId = req.identity;
+        const submissionId = req.params.id;
+
+        const isOwner = await checkOwnerSubmissionSql(submissionId, userId);
+
+        console.log(isOwner);
+        if(!isOwner)
+        {
+            return res.sendStatus(404);
+        }
+
+        const submission = await getSingleSubmissionSql(submissionId);
+
+        return res.json(submission);
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res, err);
+    }
+});
+
+router.post('/mark/:id', async (req, res) => {
+    try {
+        const userId = req.identity;
+        const submissionId = req.params.id;
+
+        const isOwner = await checkOwnerSubmissionSql(submissionId, userId);
+
+        console.log(isOwner);
+        if(!isOwner)
+        {
+            return res.sendStatus(404);
+        }
+
+        await markSubmissionSql(submissionId);
+
+        return res.sendStatus(200);
     }
     catch (err)
     {
