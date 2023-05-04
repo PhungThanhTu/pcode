@@ -163,7 +163,16 @@ router.post(
 
             if(contentTypeId === 0)
             {
-                content = req.body.content | '';
+                content = req.body.content;
+                console.log('Content is:');
+                console.log(content);
+                await createContentSql(contentId, contentTypeId, documentId, content);
+                return res.status(201).json({
+                    contentId,
+                    contentTypeId,
+                    documentId,
+                    contentBody: content
+                });
             }
             else
             {
