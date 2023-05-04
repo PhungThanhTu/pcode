@@ -35,7 +35,6 @@ module.exports.verifyRoleDocument = (...roles) => async (req, res, next) => {
         const identity = req.identity;
         const allowedRole = roles;
         const requestRole = await getRoleDocumentSql(documentId, identity);
-        console.log(JSON.stringify(requestRole));
         if(requestRole.length === 0 || !allowedRole.some((role) => role === requestRole[0].Role))
         {
             return res.sendStatus(403);

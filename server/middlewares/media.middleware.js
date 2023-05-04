@@ -26,6 +26,13 @@ const verifySingleFile = async (req, res, next) => {
 }
 
 module.exports.uploadSingleFile = async (req, res, next) => {
+    const contentTypeId = Number(req.body.contentTypeId);
+
+    if(contentTypeId === 0)
+    {
+        return next();
+    }
+
     upload.single('file')(req, res, () => {
         verifySingleFile(req, res, next);
     });
