@@ -1,6 +1,6 @@
 const { execSync } = require('child_process');
 const sql = require('mssql');
-const sqlConfig = require('../configs/mssqlConfig');
+const sqlConfig = require('../../server/configs/mssqlConfig');
 const fs = require('fs/promises')
 
 const BOX_DIR_PREFIX = '/usr/local/etc/isolate/example/'
