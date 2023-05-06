@@ -5,12 +5,13 @@ const { authorizedRoute } = require('../middlewares/auth.middleware');
 const { getCourseByIdSql, getRoleInCourseSql } = require('../models/course.model');
 const { createDocumentSql, linkDocumentWithCourseSql, getDocumentContentTypes, deleteDocumentSql, updateDocumentSql, setDocumentPublicityAllCourseSql } = require('../models/document.model');
 const { documentCreationSchema, documentUpdateSchema } = require('../schema/document.schema');
+const { contentUpdateSchema } = require('../schema/content.schema');
 const { uploadSingleFile } = require('../middlewares/media.middleware');
 const { verifyExistingDocument, verifyRoleDocument } = require('../middlewares/document.middleware');
 const { getFileExtensions } = require('../utils/media.utils');
 const { lookup } = require('mime-types');
 const { uploadMedia, deleteMedia } = require('../models/media.model');
-const { createContentSql, getContentsByDocumentIdSql, deleteContentSql } = require('../models/content.model');
+const { createContentSql, getContentByIdSql, getContentsByDocumentIdSql, deleteContentSql, updateContentByIdSql } = require('../models/content.model');
 
 var exerciseRouter = require('./exercise');
 var testcaseRouter = require('./testcase');
@@ -158,6 +159,7 @@ router.post(
         try {
 
             const documentId = req.params.documentId;
+            await deleteAllDocumentContents(documentId);
             const contentId = randomUUID();
             const contentTypeId = Number(req.body.contentTypeId);
             let content = ''
@@ -228,6 +230,37 @@ router.post(
             return handleExceptionInResponse(res, err);
         }
     });
+
+router.patch(
+    '/:documentId/content/:contentId',
+    verifyExistingDocument,
+    verifyRoleDocument(0),
+    async (req, res) => {
+        try {
+            const documentId = req.params.documentId;
+            const contentId = req.params.contentId;
+            const contentUpdateRequest = req.body;
+
+            const {
+                content
+            } = await contentUpdateSchema.validateAsync(contentUpdateRequest);
+            
+            const foundContent = await getContentByIdSql(contentId);
+
+            if(!foundContent || foundContent.DocumentId !== documentId.toUpperCase())
+                return res.sendStatus(404);
+
+            await updateContentByIdSql(contentId, content);
+
+            return res.sendStatus(200);
+            
+        }
+        catch(err)
+        {
+            return handleExceptionInResponse(res, err);
+        }
+    }
+)
 
 router.delete(
     '/:documentId/content/',

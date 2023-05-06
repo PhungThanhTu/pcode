@@ -58,3 +58,16 @@ module.exports.getContentsByDocumentIdSql = async (id) => {
 
     return result;
 }
+
+module.exports.updateContentByIdSql = async (id, content) => {
+    const pool = await sql.connect(sqlConfig);
+
+    await pool.request()
+        .input('Id', sql.UniqueIdentifier, id)
+        .input('ContentBody', sql.NVarChar, content)
+        .execute('UpdateContentById')
+    
+    await pool.close();
+
+    return ;
+}
