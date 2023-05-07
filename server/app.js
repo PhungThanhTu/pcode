@@ -12,7 +12,6 @@ var profileRouter = require('./routes/profile');
 var courseRouter = require('./routes/course');
 var documentRouter = require('./routes/document');
 var mediaRouter = require('./routes/media');
-var publicRouter = require('./routes/public');
 
 var app = express();
 
@@ -33,7 +32,6 @@ router.use('/profile', profileRouter);
 router.use('/course', courseRouter);
 router.use('/document', documentRouter);
 router.use('/media', mediaRouter);
-router.use('/public', publicRouter);
 
 app.use('/api',router);
 

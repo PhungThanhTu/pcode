@@ -71,16 +71,3 @@ module.exports.updateContentByIdSql = async (id, content) => {
 
     return ;
 }
-
-module.exports.getContentTypesSql = async () => {
-    const pool = await sql.connect(sqlConfig);
-
-    const request = await pool.request()
-        .query('exec GetContentTypes');
-    
-    await pool.close();
-
-    const result = request.recordset;
-
-    return result;
-}
