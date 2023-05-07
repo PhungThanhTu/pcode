@@ -9,6 +9,7 @@ create procedure GetExerciseById
             TimeCreated,
             HaveDeadline,
             StrictDeadline,
-            ManualPercentage
+            ManualPercentage,
+            JudgerId
         from [dbo].[Exercise]
         where Id = @Id

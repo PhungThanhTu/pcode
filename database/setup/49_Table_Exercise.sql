@@ -9,5 +9,6 @@ create table Exercise
     Deadline datetime2,
     StrictDeadline bit,
     ManualPercentage float,
-    Check(ManualPercentage >= 0 and ManualPercentage <= 1)
+    Check(ManualPercentage >= 0 and ManualPercentage <= 1),
+    JudgerId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES [dbo].[CustomJudger](Id)
 )
