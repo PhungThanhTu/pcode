@@ -7,9 +7,10 @@
     "dev": "nodemon ./runner/consumer"
   },
   "dependencies": {
+    "amqplib": "^0.10.3",
     "dotenv": "^16.0.3",
-    "mssql": "^9.1.1",
-    "amqplib": "^0.10.3"
+    "joi": "^17.9.2",
+    "mssql": "^9.1.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
