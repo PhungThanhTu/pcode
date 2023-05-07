@@ -1,1 +1,0 @@
-isolate -b 0 -p -E PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin --run  /usr/bin/g++ -o example.o example.cpp
