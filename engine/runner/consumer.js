@@ -1,11 +1,20 @@
 var amqp = require('amqplib');
+const joi = require('joi');
 const dotenv = require('dotenv');
+const { getSubmissionByIdSql } = require('../models/submission.model');
+const { automatedJudgeSubmission } = require('../services/SubmissionJudge');
 dotenv.config();
+const logger = require('../utils/logger')
 
 const conString = 'amqp://admin:admin@mq'
 
+async function sleep(milisec) {
+    return await new Promise(r => setTimeout(r, milisec));
+}
+
 async function tryListeningForMessage() {
     try {
+        logger.info('Consumer starting ...');
         const rabbitConnection = await amqp.connect(conString);
 
         const channel = await rabbitConnection.createChannel();
@@ -15,20 +24,58 @@ async function tryListeningForMessage() {
         await channel.assertQueue(queue,{
             durable: false
         });
+        logger.success('Consumer started success');
+        logger.info("Listening for message ...");
+        
 
-        console.log("Listening for message ...");
+        channel.consume(queue, async (message) => {
+            try {
+                const content = (JSON.parse(message.content.toString()));
 
-        channel.consume(queue, (message) => {
-            console.log(`Received message: ${message.content.toString()}`)
-        },
-        {
-            noAck: true
+                const submissionId = content.submissionId;
+                const type = content.type;
+
+                if(!type || type !== 'JUDGE')
+                {
+                    channel.nack(message, false, false);
+                    return;
+                }
+
+                const validatedSubmissionId = joi.string().uuid().validate(submissionId);
+
+                if(validatedSubmissionId.error)
+                {
+                    logger.error('submission not valid');
+                    logger.error(validatedSubmissionId);
+                    channel.nack(message, false, false);
+                    return;
+                }
+                
+                await automatedJudgeSubmission(submissionId);
+                channel.ack(message);
+            }
+            catch (err)
+            {
+                logger.error(err);
+            }
         });
 
+        channel.on('error', (err) => {
+            logger.error(err);
+            channel.close();
+        });
+
+        channel.on('close', () => {
+            logger.warn('Channel closed, attempting to restart ...');
+            tryListeningForMessage();
+        })
     }
     catch (err)
     {
-        throw err;
+        logger.error(err);
+        logger.warn('Consumer crashed, restarting ...');
+        await sleep(5000);
+        tryListeningForMessage();
     }
 }
 
