@@ -124,6 +124,10 @@ module.exports.getMediaBlobStream = async (id) => {
 
     const blobClient = BlobServiceClient
         .fromConnectionString(conString);
+
+    if(!blobClient)
+        throw new Error("Azure Blob storage is not available");
+    
     const containerClient = blobClient
         .getContainerClient(containerName);
     const singleBlobClient = containerClient

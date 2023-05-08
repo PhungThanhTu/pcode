@@ -46,15 +46,42 @@ services:
       - REFRESH_TOKEN_LIFETIME=7
       - AZURE_BLOB_CONSTRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;
     volumes:
-      - ./../../example:/usr/local/etc/isolate/example/
       - ./../../server:/server
       - /server/node_modules
-      - ./../../cg/cpuacct:/sys/fs/cgroup/cpuacct
-      - ./../../cg/memory:/sys/fs/cgroup/memory
     build:
       context: ./../../
       dockerfile: ./server/Dockerfile 
     ports:
       - "8000:8000"
+  mq:
+    container_name: mq
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./rabbitmq-data:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+  engine:
+    container_name: engine
+    privileged: true
+    image: plp_engine
+    environment:
+      - MSSQL_HOST=mssql
+      - MSSQL_PORT=1433
+      - MSSQL_USERNAME=sa
+      - MSSQL_PASSWORD=Superadmin123456!1
+      - MSSQL_DATABASE=plp
+    volumes:
+      - ./../../vm/sandboxes:/usr/local/etc/isolate/sandboxes/
+      - ./../../engine:/engine
+      - /engine/node_modules
+      - ./../../vm/cg/cpuacct:/sys/fs/cgroup/cpuacct
+      - ./../../vm/cg/memory:/sys/fs/cgroup/memory
+    build:
+      context: ./../../
+      dockerfile: ./engine/Dockerfile 
 volumes:
     mssql:

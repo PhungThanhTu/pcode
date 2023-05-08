@@ -67,7 +67,7 @@ typings/
 
 # Yarn Integrity file
 .yarn-integrity
-
+docker/dev/rabbitmq-data
 # dotenv environment variables file
 .env
 .env.test
@@ -110,9 +110,21 @@ isolate/isolate.1.html
 isolate/*.o
 database/app/node_modules
 example/
+engine/sandboxes/
+!engine/sandboxes/.gitkeep
+engine/node_modules/
 !example/.gitkeep
 cg/
+engine/cg/
+!engine/cg/.gitkeep
 !cg/memory/.gitkeep
 !cg/cpuacct/.gitkeep
 .vscode/
 *.DS_Store
+vm/cg/
+vm/sandboxes/
+
+!vm/cg/.gitkeep
+!vm/cg/memory/.gitkeep
+!vm/cg/cpuacct/.gitkeep
+!vm/sandboxes/.gitkeep
