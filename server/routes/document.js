@@ -36,8 +36,6 @@ const deleteAllDocumentContents = async (documentId) => {
         const id = documentContent.Id;
         const typeId = documentContent.ContentTypeId;
 
-        console.log(id);
-
         if(Number(typeId) !== 0)
         {
             await deleteMedia(documentContent.ContentBody);
