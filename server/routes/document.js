@@ -32,11 +32,15 @@ const deleteAllDocumentContents = async (documentId) => {
     const documentContents = await getContentsByDocumentIdSql(documentId);
 
     for ( const documentContent of documentContents){
-        if(documentContent.contentTypeId !== 0)
+        
+        const id = documentContent.Id;
+        const typeId = documentContent.ContentTypeId;
+
+        if(Number(typeId) !== 0)
         {
             await deleteMedia(documentContent.ContentBody);
         }
-        await deleteContentSql(documentContent.Id);
+        await deleteContentSql(id);
     }
 }
 
