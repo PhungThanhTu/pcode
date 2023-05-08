@@ -31,8 +31,6 @@ const deleteAllDocumentContents = async (documentId) => {
 
     const documentContents = await getContentsByDocumentIdSql(documentId);
 
-    console.log(documentContents);
-
     for ( const documentContent of documentContents){
         
         const id = documentContent.Id;
