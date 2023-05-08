@@ -2,7 +2,7 @@ const { execSync } = require('child_process');
 const sql = require('mssql');
 const sqlConfig = require('../configs/mssqlConfig')
 const fs = require('fs/promises');
-const { getSubmissionByIdSql } = require('../models/submission.model');
+const { getSubmissionByIdSql, updateSubmissionTestResultSql } = require('../models/submission.model');
 const logger = require('../utils/logger');
 const { getProgrammingLanguageByIdSql } = require('../models/language.model');
 const {replaceAll} = require('../utils/string');
@@ -189,7 +189,7 @@ const getTestResultWithCompilationError = async (boxid, testcases) => {
 
         const testId = testcase.Id;
 
-        const runTime = Number(metaJson.time);
+        const runTime = Number(metaJson.time) * 1000;
 
         const memoryUsage = Number(metaJson.maxRss);
     
@@ -222,7 +222,7 @@ const getTestResultWithSuccess = async (boxid, testCasesWithJudgeStatus, exercis
         const meta = metaStringToJson(metaString);
         
         const output = await readFileFromPath(outputPath);
-        const time = meta.time
+        const time = meta.time * 1000
 
         let runStatus = 1;
 
@@ -296,7 +296,7 @@ const verifySubmissionCompileResult = async (boxid) => {
     const metaJsonString = '{"' + compiledMetaString.trim().replace(/\n/g, '","').replace(/:/g, '":"').replace(/max-rss/,"maxRss") + '"}';
     const metaJsonObject = JSON.parse(metaJsonString);
 
-    const time = Number(metaJsonObject.time);
+    const time = Number(metaJsonObject.time) * 1000;
     const memory = Number(metaJsonObject.maxRss);
     const exitCode = Number(metaJsonObject.exitcode);
     const output = outputString;
@@ -407,8 +407,10 @@ module.exports = {
                 logger.error(err);
                 testResults = await getTestResultWithCompilationError(boxid, testCases);
             }
+
+            await updateSubmissionTestResultSql(submissionId, JSON.stringify(testResults));
             
-            //await cleanIsolateBox(boxid);
+            await cleanIsolateBox(boxid);
 
             logger.success('Success judged the submission');
             logger.info(JSON.stringify(testResults, null, 2));

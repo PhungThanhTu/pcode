@@ -14,3 +14,15 @@ exports.getSubmissionByIdSql = async (id) => {
 
     return result;
 }
+
+exports.updateSubmissionTestResultSql = async (submissionId, jsonJudgeData) => {
+    const pool = await sql.connect(sqlConfig);
+
+     await pool.request()
+        .input('submissionId', sql.UniqueIdentifier, submissionId)
+        .input('jsonJudgeData', sql.NVarChar, jsonJudgeData)
+        .execute('UpdateSubmissionResult')
+
+    await pool.close();
+
+}
