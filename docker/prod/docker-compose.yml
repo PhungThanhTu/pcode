@@ -4,19 +4,22 @@ services:
   server:
     container_name: plp_server
     privileged: true
-    image: plp_server
+    image: phungthanhtu/plp_server:latest
+    env_file:
+      - ./.env
+    ports:
+      - "8080:80"
+  engine:
+    container_name: plp_engine
+    privileged: true
+    image: phungthanhtu/plp_engine:latest
     env_file:
       - ./.env
     volumes:
-      - ./../../example:/usr/local/etc/isolate/example/
-      - ./../../server:/server
-      - /server/node_modules
-      - ./../../cg/cpuacct:/sys/fs/cgroup/cpuacct
-      - ./../../cg/memory:/sys/fs/cgroup/memory
-    build:
-      context: ./../../
-      dockerfile: ./server/Dockerfile 
-    ports:
-      - "8000:8000"
+      - ./../../vm/sandboxes:/usr/local/etc/isolate/sandboxes/
+      - ./../../engine:/engine
+      - /engine/node_modules
+      - ./../../vm/cg/cpuacct:/sys/fs/cgroup/cpuacct
+      - ./../../vm/cg/memory:/sys/fs/cgroup/memory 
 volumes:
     mssql:

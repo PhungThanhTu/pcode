@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./runner/consumer",
-    "dev": "nodemon ./runner/consumer"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "prod": "pm2-runtime start index.js -i max"
   },
   "dependencies": {
     "amqplib": "^0.10.3",

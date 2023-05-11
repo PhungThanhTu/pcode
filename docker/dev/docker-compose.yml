@@ -29,7 +29,7 @@ services:
     expose:
       - 1400
   server:
-    container_name: plp_server
+    container_name: plp-server
     privileged: true
     image: plp_server
     environment:
@@ -45,6 +45,8 @@ services:
       - JWT_LIFETIME=1440m
       - REFRESH_TOKEN_LIFETIME=7
       - AZURE_BLOB_CONSTRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;
+      - RABBITMQ=amqp://admin:admin@mq
+      - RABBITMQ_QUEUE_NAME=judge
     volumes:
       - ./../../server:/server
       - /server/node_modules
@@ -65,7 +67,7 @@ services:
       - RABBITMQ_DEFAULT_USER=admin
       - RABBITMQ_DEFAULT_PASS=admin
   engine:
-    container_name: engine
+    container_name: plp-engine
     privileged: true
     image: plp_engine
     environment:
@@ -74,6 +76,8 @@ services:
       - MSSQL_USERNAME=sa
       - MSSQL_PASSWORD=Superadmin123456!1
       - MSSQL_DATABASE=plp
+      - RABBITMQ=amqp://admin:admin@mq
+      - RABBITMQ_QUEUE_NAME=judge
     volumes:
       - ./../../vm/sandboxes:/usr/local/etc/isolate/sandboxes/
       - ./../../engine:/engine

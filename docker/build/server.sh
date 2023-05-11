@@ -1,0 +1,1 @@
+docker build -t phungthanhtu/plp_server:latest -f ./server/Dockerfile .
