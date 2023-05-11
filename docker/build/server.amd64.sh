@@ -1,0 +1,1 @@
+docker build -t phungthanhtu/plp_server:amd64 --platform linux/amd64 -f ./server/Dockerfile .

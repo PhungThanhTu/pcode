@@ -7,8 +7,9 @@ RUN make isolate
 ENV PATH="/usr/local/etc/isolate:$PATH"
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash
 RUN apt-get install -y nodejs
+RUN npm install pm2@latest -g
 WORKDIR /engine
 COPY ./engine/package.json .
 RUN npm install
 COPY ./engine .
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "prod"]

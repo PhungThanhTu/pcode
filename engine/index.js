@@ -1,12 +1,11 @@
 var amqp = require('amqplib');
 const joi = require('joi');
 const dotenv = require('dotenv');
-const { getSubmissionByIdSql } = require('../models/submission.model');
-const { automatedJudgeSubmission } = require('../services/SubmissionJudge');
+const { automatedJudgeSubmission } = require('./services/SubmissionJudge');
 dotenv.config();
-const logger = require('../utils/logger')
+const logger = require('./utils/logger')
 
-const conString = 'amqp://admin:admin@mq'
+const { conString } = require('./configs/rabbitmqConfig');
 
 async function sleep(milisec) {
     return await new Promise(r => setTimeout(r, milisec));
@@ -24,7 +23,8 @@ async function tryListeningForMessage() {
         await channel.assertQueue(queue,{
             durable: false
         });
-        logger.success('Consumer started success');
+        logger.success('Consumer started success on host:');
+        logger.success(conString.split('@')[1]);
         logger.info("Listening for message ...");
         
 
@@ -52,11 +52,13 @@ async function tryListeningForMessage() {
                 }
                 
                 await automatedJudgeSubmission(submissionId);
+                logger.success('Job completed successfully');
                 channel.ack(message);
             }
             catch (err)
             {
                 logger.error(err);
+                channel.ack(message);
             }
         });
 
