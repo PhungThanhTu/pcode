@@ -7,7 +7,8 @@ exports.createExerciseInDocumentSql = async (
     runtimeLimit,
     memoryLimit,
     scoreWeight,
-    manualPercentage
+    manualPercentage,
+    judgerId
     ) => {
     const pool = await sql.connect(sqlConfig);
 
@@ -18,6 +19,7 @@ exports.createExerciseInDocumentSql = async (
         .input('MemoryLimit', sql.Int, memoryLimit)
         .input('ScoreWeight', sql.Int, scoreWeight)
         .input('ManualPercentage', sql.Float, manualPercentage)
+        .input('JudgerId', sql.UniqueIdentifier, judgerId)
         .execute('CreateExerciseInDocument')
 
     await pool.close();
@@ -31,7 +33,8 @@ exports.updateExerciseInDocumentSql = async (
     manualPercentage,
     haveDeadline,
     deadline,
-    strictDeadline
+    strictDeadline,
+    judgerId
 ) => {
 
     const pool = await sql.connect(sqlConfig);
@@ -45,6 +48,7 @@ exports.updateExerciseInDocumentSql = async (
         .input('HaveDeadline', sql.Bit, haveDeadline)
         .input('Deadline', sql.DateTime2, deadline)
         .input('StrictDeadline', sql.Bit, strictDeadline)
+        .input('JudgerId', sql.UniqueIdentifier, judgerId)
         .execute('UpdateExerciseByDocumentId');
 
     await pool.close();

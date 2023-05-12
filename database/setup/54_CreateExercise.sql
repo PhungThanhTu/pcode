@@ -1,17 +1,16 @@
--- default no deadline options
--- other default option will be hardcoded into a config file in backend code
 create procedure CreateExerciseInDocument
     @Id UNIQUEIDENTIFIER,
     @DocumentId UNIQUEIDENTIFIER,
     @RuntimeLimit INT,
     @MemoryLimit INT,
     @ScoreWeight INT,
-    @ManualPercentage FLOAT
+    @ManualPercentage FLOAT,
+    @JudgerId UNIQUEIDENTIFIER
     AS
         INSERT INTO [dbo].[Exercise]
-        (Id, RuntimeLimit, MemoryLimit, ScoreWeight, TimeCreated, ManualPercentage, HaveDeadline)
+        (Id, RuntimeLimit, MemoryLimit, ScoreWeight, TimeCreated, ManualPercentage, HaveDeadline, JudgerId)
         VALUES
-        (@Id, @RuntimeLimit, @MemoryLimit, @ScoreWeight, GETDATE(), @ManualPercentage, 0)
+        (@Id, @RuntimeLimit, @MemoryLimit, @ScoreWeight, GETDATE(), @ManualPercentage, 0, @JudgerId)
         INSERT INTO [dbo].[DocumentExercise]
         (DocumentId, ExerciseId)
         VALUES

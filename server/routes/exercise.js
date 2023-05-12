@@ -22,7 +22,8 @@ router.post('/', verifyRoleDocument(0), async (req, res) => {
             runtimeLimit,
             memoryLimit,
             scoreWeight,
-            manualPercentage
+            manualPercentage,
+            judgerId
         } = await exerciseCreateSchema.validateAsync(createExerciseRequest);
 
         await createExerciseInDocumentSql(
@@ -31,7 +32,9 @@ router.post('/', verifyRoleDocument(0), async (req, res) => {
             runtimeLimit, 
             memoryLimit, 
             scoreWeight, 
-            manualPercentage);
+            manualPercentage,
+            judgerId
+            );
 
         return res.status(201).json({
             exerciseId,
@@ -60,7 +63,8 @@ router.patch('/', verifyRoleDocument(0), async (req, res) => {
             manualPercentage,
             haveDeadline,
             deadline,
-            strictDeadline
+            strictDeadline,
+            judgerId
         } = await exerciseEditSchema.validateAsync(updateExerciseRequest);
 
         await updateExerciseInDocumentSql(
@@ -71,7 +75,8 @@ router.patch('/', verifyRoleDocument(0), async (req, res) => {
             manualPercentage,
             haveDeadline,
             deadline,
-            strictDeadline
+            strictDeadline,
+            judgerId
         );
 
         return res.sendStatus(200);

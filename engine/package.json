@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node index.js",
+    "start": "if [ $NODENV = 'prod' ]; then npm run prod; else npm run dev; fi",
     "dev": "nodemon index.js",
     "prod": "pm2-runtime start index.js -i max"
   },
