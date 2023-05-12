@@ -27,7 +27,10 @@ exports.exerciseCreateSchema = joi.object(
             .min(0)
             .max(1)
             .optional()
-            .default(DEFAULT_MANUAL_PERCENTAGE)
+            .default(DEFAULT_MANUAL_PERCENTAGE),
+        judgerId: joi.string()
+            .uuid()
+            .required()
     }
 )
 
@@ -58,7 +61,10 @@ exports.exerciseEditSchema = joi.object(
             .format('YYYY-MM-DD hh:mm')
             .default(null),
         strictDeadline: joi.boolean()
-            .default(false)
+            .default(false),
+        judgerId: joi.string()
+            .uuid()
+            .default(null)
     }
 )
 

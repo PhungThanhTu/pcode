@@ -6,7 +6,8 @@ create procedure UpdateExerciseById
     @HaveDeadline bit,
     @Deadline datetime2,
     @StrictDeadline bit,
-    @ManualPercentage float
+    @ManualPercentage float,
+    @JudgerId UNIQUEIDENTIFIER
     AS
         update [dbo].[Exercise]
         SET
@@ -16,6 +17,7 @@ create procedure UpdateExerciseById
             HaveDeadline = @HaveDeadline,
             Deadline = @Deadline,
             StrictDeadline = @StrictDeadline,
-            ManualPercentage = @ManualPercentage
+            ManualPercentage = @ManualPercentage,
+            JudgerId = @JudgerId
         WHERE
             Id = @Id

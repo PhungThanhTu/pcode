@@ -6,7 +6,8 @@ create procedure UpdateExerciseByDocumentId
     @HaveDeadline bit = NULL,
     @Deadline datetime2 = NULL,
     @StrictDeadline bit = NULL,
-    @ManualPercentage float = NULL
+    @ManualPercentage float = NULL,
+    @JudgerId UNIQUEIDENTIFIER = NULL
     AS
         update [dbo].[Exercise]
         SET
@@ -16,7 +17,8 @@ create procedure UpdateExerciseByDocumentId
             HaveDeadline = COALESCE(@HaveDeadline, HaveDeadline),
             Deadline = COALESCE(@Deadline, Deadline),
             StrictDeadline = COALESCE(@StrictDeadline, StrictDeadline),
-            ManualPercentage = COALESCE(@ManualPercentage, ManualPercentage)
+            ManualPercentage = COALESCE(@ManualPercentage, ManualPercentage),
+            JudgerId = COALESCE(@JudgerId, JudgerId)
         FROM [dbo].[Exercise] E
         JOIN [dbo].[DocumentExercise] DE
         ON E.Id = DE.ExerciseId

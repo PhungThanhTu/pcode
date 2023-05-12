@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "prod": "pm2-runtime start ./bin/www -i max",
-    "start": "node ./bin/www",
+    "start": "if [ $NODENV = 'prod' ]; then npm run prod; else npm run dev; fi",
     "dev": "nodemon ./bin/www"
   },
   "dependencies": {

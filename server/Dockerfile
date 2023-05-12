@@ -8,4 +8,4 @@ COPY ./server/package.json .
 RUN npm install
 COPY ./server .
 EXPOSE 8000
-CMD ["npm","run","prod"]
+CMD ["npm","run","start"]

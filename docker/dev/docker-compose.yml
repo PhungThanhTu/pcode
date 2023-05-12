@@ -71,6 +71,7 @@ services:
     privileged: true
     image: plp_engine
     environment:
+      - NODENV=dev
       - MSSQL_HOST=mssql
       - MSSQL_PORT=1433
       - MSSQL_USERNAME=sa

@@ -10,7 +10,8 @@ create procedure GetExerciseByDocumentId
             HaveDeadline,
             Deadline,
             StrictDeadline,
-            ManualPercentage
+            ManualPercentage,
+            JudgerId         
         from [dbo].[Exercise] e
         join [dbo].[DocumentExercise] de
         on e.Id = de.ExerciseId
