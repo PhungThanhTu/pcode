@@ -4,7 +4,7 @@ const { authorizedRoute } = require('../middlewares/auth.middleware');
 const { verifyExistingDocument, verifyRoleDocument } = require('../middlewares/document.middleware');
 const { submissionCreationSchema } = require('../schema/submission.schema');
 const { randomUUID } = require('crypto');
-const { getProgrammingLanguagesSql, createSubmissionInDocumentSql, getMySubmissionInDocumentSql, checkOwnerSubmissionSql, markSubmissionSql, getSingleSubmissionSql, deleteSubmissionByIdSql, getStudentMarkedSubmissionsInDocumentSql } = require('../models/submission.model');
+const { getProgrammingLanguagesSql, createSubmissionInDocumentSql, getMySubmissionInDocumentSql, checkOwnerSubmissionSql, markSubmissionSql, getSingleSubmissionSql, deleteSubmissionByIdSql, getStudentMarkedSubmissionsInDocumentSql, getTestResultBySubmissionIdSql } = require('../models/submission.model');
 var router = express.Router({mergeParams: true});
 
 router.use(authorizedRoute);
@@ -87,7 +87,13 @@ router.get('/:id', verifyRoleDocument(0,1), async (req, res) => {
 
         const submission = await getSingleSubmissionSql(submissionId);
 
-        return res.json(submission);
+        const submissionTestResult = await getTestResultBySubmissionIdSql(submissionId);
+
+
+        return res.json({
+            ...submission,
+            testResults: submissionTestResult
+        });
     }
     catch (err)
     {
@@ -140,7 +146,6 @@ router.delete('/:id', verifyRoleDocument(0,1), async (req, res) => {
         return handleExceptionInResponse(res, err);
     }
 });
-
 
 
 module.exports = router;
