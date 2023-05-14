@@ -4,10 +4,6 @@ const {
     queueName
 } = require('../configs/rabbitmqConfig');
 
-
-
-
-
 async function trySendingMessage (message) {
     
     try {
