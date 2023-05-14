@@ -5,7 +5,7 @@ const { automatedJudgeSubmission } = require('./services/SubmissionJudge');
 dotenv.config();
 const logger = require('./utils/logger')
 
-const { conString } = require('./configs/rabbitmqConfig');
+const { conString, queueName } = require('./configs/rabbitmqConfig');
 
 async function sleep(milisec) {
     return await new Promise(r => setTimeout(r, milisec));
@@ -18,14 +18,14 @@ async function tryListeningForMessage() {
 
         const channel = await rabbitConnection.createChannel();
 
-        const queue = 'sample';
+        const queue = queueName;
 
         await channel.assertQueue(queue,{
             durable: false
         });
         logger.success('Consumer started success on host:');
         logger.success(conString.split('@')[1]);
-        logger.info("Listening for message ...");
+        logger.info(`Listening for message on queue ${queue} ...`);
         
 
         channel.consume(queue, async (message) => {
