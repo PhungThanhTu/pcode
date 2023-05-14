@@ -5,7 +5,11 @@ const { verifyExistingDocument, verifyRoleDocument } = require('../middlewares/d
 const { submissionCreationSchema } = require('../schema/submission.schema');
 const { randomUUID } = require('crypto');
 const { getProgrammingLanguagesSql, createSubmissionInDocumentSql, getMySubmissionInDocumentSql, checkOwnerSubmissionSql, markSubmissionSql, getSingleSubmissionSql, deleteSubmissionByIdSql, getStudentMarkedSubmissionsInDocumentSql, getTestResultBySubmissionIdSql } = require('../models/submission.model');
+const { getExerciseInDocumentSql } = require('../models/exercise.model');
+const { trySendingMessage } = require('../publisher');
 var router = express.Router({mergeParams: true});
+
+const DEADLINE_TOLERANCE_IN_MINUTES = 10;
 
 router.use(authorizedRoute);
 router.use(verifyExistingDocument);
@@ -16,6 +20,24 @@ router.post('/', verifyRoleDocument(0,1), async (req,res) => {
         const id = randomUUID();
         const documentId = req.params.documentId;
         const programmingLanguageId = Number(req.query.programmingLanguage);
+
+        const exercise = await getExerciseInDocumentSql(documentId);
+
+        const haveDeadline = exercise.HaveDeadline;
+        const deadline = exercise.Deadline;
+        const strictDeadline = exercise.StrictDeadline;
+
+        const deadlineDate = new Date(deadline);
+        deadlineDate.setMinutes(deadlineDate.getMinutes() + DEADLINE_TOLERANCE_IN_MINUTES);
+        const deadlineTimestamp = deadlineDate.getTime();
+        
+        const dateNowTimestamp = new Date().getTime();
+
+        if(haveDeadline && strictDeadline && dateNowTimestamp > deadlineTimestamp)
+        {
+            return res.status(410).send("Submission Overdue");
+        }
+
         const submissionCreateRequest = req.body;
 
         const programmingLanguages = await getProgrammingLanguagesSql();
@@ -30,6 +52,15 @@ router.post('/', verifyRoleDocument(0,1), async (req,res) => {
         } = await submissionCreationSchema.validateAsync(submissionCreateRequest);
 
         await createSubmissionInDocumentSql(id, documentId, userId, programmingLanguageId, sourceCode);
+
+        const messageObject = {
+            submissionId: id,
+            type: 'JUDGE'
+        }
+
+        const messageJson = JSON.stringify(messageObject);
+
+        await trySendingMessage(messageJson);
 
         return res.status(201).json({
             id,

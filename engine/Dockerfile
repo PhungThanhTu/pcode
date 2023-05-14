@@ -12,4 +12,4 @@ WORKDIR /engine
 COPY ./engine/package.json .
 RUN npm install
 COPY ./engine .
-CMD ["npm", "run", "prod"]
+CMD ["npm", "run", "start"]
