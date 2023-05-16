@@ -1,6 +1,6 @@
 CREATE TRIGGER [dbo].[OnSubmissionUpdate]
 ON [dbo].[Submission]
-AFTER INSERT, DELETE
+AFTER INSERT, UPDATE, DELETE
 AS
 BEGIN
     declare @Choice BIT
@@ -12,7 +12,7 @@ BEGIN
             declare @AutomatedScore FLOAT
             select @AutomatedScore = AutomatedScore from inserted
             declare @ManualScore FLOAT
-            select @ManualScore = ManualScore from inserted
+            select @ManualScore = COALESCE(ManualScore,0) from inserted
             declare @ExerciseId UNIQUEIDENTIFIER
             select @ExerciseId = ExerciseId from inserted
             
@@ -46,11 +46,18 @@ BEGIN
             )
             ON DestinationTable.UserId = UpsertingData.UserId
             AND DestinationTable.DocumentId = UpsertingData.DocumentId
-            WHEN NOT MATCHED THEN
-                INSERT (UserId, DocumentId, Score)
-                VALUES (@UserId, @DocumentId, @Score)
             WHEN MATCHED THEN
                 UPDATE SET
-                    DestinationTable.Score = UpsertingData.Score;
+                    DestinationTable.Score = UpsertingData.Score
+            WHEN NOT MATCHED THEN
+                INSERT (UserId, DocumentId, Score)
+                VALUES (
+                UpsertingData.UserId,
+                UpsertingData.DocumentId,
+                UpsertingData.Score
+                );
+
         END
 END
+
+select * from [dbo].[DocumentScore]
