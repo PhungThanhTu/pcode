@@ -59,5 +59,3 @@ BEGIN
 
         END
 END
-
-select * from [dbo].[DocumentScore]
