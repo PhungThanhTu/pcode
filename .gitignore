@@ -115,8 +115,8 @@ engine/node_modules/
 *.DS_Store
 vm/cg/cpuacct/*
 vm/cg/memory/*
-vm/cg/sandboxes/*
+vm/sandboxes/*
 !vm/cg/memory/.gitkeep
 !vm/cg/cpuacct/.gitkeep
-!vm/cg/sandboxes/.gitkeep
+!vm/sandboxes/.gitkeep
 
