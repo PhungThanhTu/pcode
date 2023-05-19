@@ -18,7 +18,7 @@ exports.getSubmissionByIdSql = async (id) => {
 exports.updateSubmissionTestResultSql = async (submissionId, jsonJudgeData) => {
     const pool = await sql.connect(sqlConfig);
 
-     await pool.request()
+    await pool.request()
         .input('submissionId', sql.UniqueIdentifier, submissionId)
         .input('jsonJudgeData', sql.NVarChar, jsonJudgeData)
         .execute('UpdateSubmissionResult')
@@ -31,7 +31,7 @@ exports.markSubmissionAsFinishedSql = async (submissionId) => {
 
      await pool.request()
         .input('SubmissionId', sql.UniqueIdentifier, submissionId)
-        .execute('UpdateSubmissionResult')
+        .execute('MarkSubmissionAsFinished');
 
-    await pool.close('MarkSubmissionAsFinished');
+    await pool.close();
 }

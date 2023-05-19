@@ -23,7 +23,7 @@ BEGIN
     declare @MaxRawScore int 
     select @MaxRawScore = sum(ScoreWeight) from [dbo].[TestCase] TC 
         where ExerciseId = @ExerciseId
-    declare @AutomatedScore float = @RawScore * 10 / @MaxRawScore 
+    declare @AutomatedScore float = @RawScore * 10.0 / @MaxRawScore 
     update [dbo].[Submission]
         set AutomatedScore = @AutomatedScore
         where Id = @SubmissionId

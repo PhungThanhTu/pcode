@@ -28,6 +28,9 @@ BEGIN
             declare @Score float
             SET @Score = @ManualScore * @ManualPercentage + @AutomatedScore * (1 - @ManualPercentage)
 
+            UPDATE [dbo].[Submission] set Score = @Score
+                where Id = @SubmissionId
+
             select @DocumentId = DocumentId from [dbo].[DocumentExercise]
                 where ExerciseId = @ExerciseId
             MERGE [dbo].[DocumentScore] as DestinationTable
