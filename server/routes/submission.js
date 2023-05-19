@@ -178,5 +178,8 @@ router.delete('/:id', verifyRoleDocument(0,1), async (req, res) => {
     }
 });
 
+router.post('/:id/score' , verifyRoleDocument(0), async (req, res) => {
+    
+})
 
 module.exports = router;
