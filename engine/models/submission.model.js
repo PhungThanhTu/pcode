@@ -18,7 +18,7 @@ exports.getSubmissionByIdSql = async (id) => {
 exports.updateSubmissionTestResultSql = async (submissionId, jsonJudgeData) => {
     const pool = await sql.connect(sqlConfig);
 
-    await pool.request()
+     await pool.request()
         .input('submissionId', sql.UniqueIdentifier, submissionId)
         .input('jsonJudgeData', sql.NVarChar, jsonJudgeData)
         .execute('UpdateSubmissionResult')
