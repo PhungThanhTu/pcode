@@ -11,3 +11,31 @@ exports.scoreSubmissionManuallySql = async (submissionId, score) => {
 
     await pool.close();
 }
+
+exports.getStudentSubmissionWithScoreInDocumentSql = async (documentId) => {
+    const pool = await sql.connect(sqlConfig);
+
+    const request = await pool.request()
+        .input('DocumentId', sql.UniqueIdentifier, documentId)
+        .query('exec GetStudentSubmissionWithScoreInDocument @DocumentId')
+    
+    await pool.close();
+
+    const result = request.recordset;
+
+    return result;
+}
+
+exports.getStudentScoreInCourseSql = async (courseId) => {
+    const pool = await sql.connect(sqlConfig);
+
+    const request = await pool.request()
+        .input('CourseId', sql.UniqueIdentifier, courseId)
+        .query('exec GetStudentScoreInCourse @CourseId');
+    
+    await pool.close();
+
+    const result = request.recordset;
+
+    return result;
+}

@@ -9,6 +9,7 @@ const { nanoid } = require('nanoid');
 const { createInvitationSql, getInvitationSql } = require('../models/invitation.model');
 var router = express.Router();
 const joi = require('joi');
+const { getStudentScoreInCourseSql } = require('../models/scoring.model');
 
 router.post('/', authorizedRoute, async (req,res) => {
     try {
@@ -186,6 +187,35 @@ router.get('/info/:code', async (req,res) => {
     catch (err)
     {
         return handleExceptionInResponse(res,err);
+    }
+})
+
+router.get('/:id/score', authorizedRoute, async (req, res) => {
+    const identity = req.identity;
+    const courseId = req.params.id;
+
+    try {
+        await joi.string().uuid().validateAsync(courseId);
+
+        const role = await getRoleOfCourseSql(identity, courseId);
+
+        if(!role) {
+            return res.sendStatus(404);
+        }
+
+        if(!role.Role === 0)
+        {
+            return res.sendStatus(404);
+
+        }
+
+        const result = await getStudentScoreInCourseSql(courseId);
+
+        return res.status(200).json(result);
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res, err);
     }
 })
 

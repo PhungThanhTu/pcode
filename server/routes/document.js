@@ -16,6 +16,8 @@ const { createContentSql, getContentByIdSql, getContentsByDocumentIdSql, deleteC
 var exerciseRouter = require('./exercise');
 var testcaseRouter = require('./testcase');
 var submissionRouter = require('./submission');
+const { getStudentMarkedSubmissionsInDocumentSql } = require('../models/submission.model');
+const { getStudentSubmissionWithScoreInDocumentSql } = require('../models/scoring.model');
 
 var router = express.Router();
 
@@ -131,7 +133,7 @@ router.post(
             return handleExceptionInResponse(res, err);
         }
     }
-)
+);
 
 router.get(
     '/:documentId',
@@ -264,7 +266,7 @@ router.patch(
             return handleExceptionInResponse(res, err);
         }
     }
-)
+);
 
 router.delete(
     '/:documentId/content/',
@@ -303,6 +305,23 @@ router.delete(
         }
 
     }
-)
+);
+
+router.get(
+    '/:documentId/score/',
+    verifyExistingDocument,
+    verifyRoleDocument(0),
+    async (req, res) => {
+        try {
+            const documentId = req.params.documentId;
+            const result = await getStudentSubmissionWithScoreInDocumentSql(documentId);
+            console.log('get all student score');
+            return res.json(result);
+        }
+        catch (err)
+        {
+            return handleExceptionInResponse(res, err);
+        }
+    });
 
 module.exports = router;

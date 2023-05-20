@@ -10,6 +10,7 @@ create procedure GetSingleSubmission
         Pending,
         Choice,
         TimeCreated,
-        ManualScore
+        ManualScore,
+        Score
     from [dbo].[Submission]
         where Id = @SubmissionId

@@ -11,9 +11,7 @@ create procedure GetTestResultsBySubmissionId
     [Input],
     [Output],
     ExpectedOutput,
-    RunStatus,
-    Pending,
-    AutomatedScore
+    RunStatus
     from [dbo].[TestResult] TR
     join [dbo].[Submission] S
     on TR.SubmissionId = S.Id
