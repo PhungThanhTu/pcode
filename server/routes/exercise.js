@@ -116,9 +116,7 @@ router.get('/sample', verifyRoleDocument(0, 1), async (req, res) => {
 
         const response = await getSampleSourceCodeInDocumentSql(documentId, programmingLanguageId);
 
-        return res.json({
-            response
-        });
+        return res.json(response);
     }
     catch (err)
     {
