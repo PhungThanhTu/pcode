@@ -2,7 +2,7 @@ const { execSync } = require('child_process');
 const sql = require('mssql');
 const sqlConfig = require('../configs/mssqlConfig')
 const fs = require('fs/promises');
-const { getSubmissionByIdSql, updateSubmissionTestResultSql } = require('../models/submission.model');
+const { getSubmissionByIdSql, updateSubmissionTestResultSql, markSubmissionAsFinishedSql } = require('../models/submission.model');
 const logger = require('../utils/logger');
 const { getProgrammingLanguageByIdSql } = require('../models/language.model');
 const {replaceAll} = require('../utils/string');
@@ -414,6 +414,8 @@ module.exports = {
 
             logger.success('Success judged the submission');
             logger.info(JSON.stringify(testResults, null, 2));
+
+            await markSubmissionAsFinishedSql(submissionId);
 
             return;
         }

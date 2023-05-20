@@ -143,6 +143,13 @@ router.post('/sample', verifyRoleDocument(0), async (req, res) => {
             return res.status(404).send("programming language not found");
         }
 
+        const document = await getExerciseInDocumentSql(documentId);
+
+        if(!document)
+        {
+            return res.status(404).send("This document has no exercise");
+        }
+
         await mergeSampleSourceCodeInDocumentSql(documentId, programmingLanguageId, validatedSourceCode.sampleSourceCode);
 
         return res.json(

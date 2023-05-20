@@ -16,7 +16,9 @@ create procedure CreateSubmissionInDocument
         SourceCode,
         Pending,
         TimeCreated,
-        Choice
+        Choice,
+        AutomatedScore,
+        ManualScore
     )
     VALUES
     (
@@ -26,6 +28,8 @@ create procedure CreateSubmissionInDocument
         @SourceCode,
         1,
         GETDATE(),
+        0,
+        0,
         0
     )
     INSERT INTO [dbo].[SubmissionUser]

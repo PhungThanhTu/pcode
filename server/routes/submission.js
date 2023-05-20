@@ -7,6 +7,8 @@ const { randomUUID } = require('crypto');
 const { getProgrammingLanguagesSql, createSubmissionInDocumentSql, getMySubmissionInDocumentSql, checkOwnerSubmissionSql, markSubmissionSql, getSingleSubmissionSql, deleteSubmissionByIdSql, getStudentMarkedSubmissionsInDocumentSql, getTestResultBySubmissionIdSql } = require('../models/submission.model');
 const { getExerciseInDocumentSql } = require('../models/exercise.model');
 const { trySendingMessage } = require('../publisher');
+const { manualScoringSchema } = require('../schema/scoring.schema');
+const { scoreSubmissionManuallySql } = require('../models/scoring.model');
 var router = express.Router({mergeParams: true});
 
 const DEADLINE_TOLERANCE_IN_MINUTES = 10;
@@ -108,10 +110,11 @@ router.get('/:id', verifyRoleDocument(0,1), async (req, res) => {
         const userId = req.identity;
         const submissionId = req.params.id;
 
+        const isCreator = req.role === 0;
+
         const isOwner = await checkOwnerSubmissionSql(submissionId, userId);
 
-        console.log(isOwner);
-        if(!isOwner)
+        if(!isOwner && !isCreator)
         {
             return res.sendStatus(404);
         }
@@ -132,7 +135,7 @@ router.get('/:id', verifyRoleDocument(0,1), async (req, res) => {
     }
 });
 
-router.post('/mark/:id', verifyRoleDocument(0,1), async (req, res) => {
+router.post('/:id/mark', verifyRoleDocument(0,1), async (req, res) => {
     try {
         const userId = req.identity;
         const submissionId = req.params.id;
@@ -178,5 +181,26 @@ router.delete('/:id', verifyRoleDocument(0,1), async (req, res) => {
     }
 });
 
+router.post('/:id/score' , verifyRoleDocument(0), async (req, res) => {
+    const submissionId = req.params.id;
+
+    const manualScoringRequest = req.body;
+    try {
+        const {
+            score
+        } = await manualScoringSchema.validateAsync(manualScoringRequest);
+        
+        await scoreSubmissionManuallySql(submissionId, score);
+
+        return res.json({
+            submissionId,
+            score
+        })
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res, err);
+    }
+})
 
 module.exports = router;
