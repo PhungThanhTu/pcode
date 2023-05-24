@@ -58,7 +58,7 @@ exports.exerciseEditSchema = joi.object(
         haveDeadline: joi.boolean()
             .default(false),
         deadline: joi.date()
-            .format('YYYY-MM-DD hh:mm')
+            .format('YYYY-MM-DD HH:mm')
             .default(null),
         strictDeadline: joi.boolean()
             .default(false),
