@@ -367,7 +367,8 @@ module.exports = {
 
             if(!testCases || testCases.length === 0)
             {
-                throw new Error("No test case specified");
+                await markSubmissionAsFinishedSql(submissionId);
+                return;
             }
 
             logger.success(`Get test case success`);
