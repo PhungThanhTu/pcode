@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "mssql": "^9.1.1"
+  }
+}
