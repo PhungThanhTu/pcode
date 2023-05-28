@@ -22,8 +22,6 @@ services:
       DATABASE: "plp"
     volumes:
       - mssql:/var/opt/mssql
-      - ./../../database/nodeapp:/nodeapp
-      - ./../../database/setup:/setup
     ports:
           - "1400:1433"                     # cổng kết nối
     expose:

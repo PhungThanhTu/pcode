@@ -1,34 +1,18 @@
 const sql = require('mssql');
-const fs = require('fs/promises')
+const fs = require('fs/promises');
+const path = require('path');
 
-const masterDbConfig = {
-    server : "localhost",
-    port : 1433,
-    user : "sa",
-    password: process.env.MSSQL_SA_PASSWORD,
-    database: "master",
-    options: {
-        encrypt: false, // use encryption for data sent across the network// trust the server's SSL certificate
-        useUTC: true
-      }
-}
+require('dotenv').config();
+
+const conString = process.env.MSSQL_CONSTRING;
+const dirname = __dirname;
+const desiredDir = path.dirname(dirname);
+const setupDir = path.join(desiredDir, 'setup');
 
 
-const config = {
-    server : "localhost",
-    port : 1433,
-    user : "sa",
-    password: process.env.MSSQL_SA_PASSWORD,
-    database: process.env.DATABASE,
-    options: {
-        encrypt: false, // use encryption for data sent across the network// trust the server's SSL certificate
-        useUTC: true
-      }
-}
-
-const tryConnect = async (dbConfig) => {
+const tryConnect = async (conString) => {
         try {
-            await sql.connect(dbConfig)
+            await sql.connect(conString)
             console.log("connected");
             return true;
         } catch (err) {
@@ -37,22 +21,6 @@ const tryConnect = async (dbConfig) => {
         }
 }
 
-const createDatabase = async () => {
-    try
-    {
-        const pool = await sql.connect(masterDbConfig);
-
-        await pool.request()
-        .query(`CREATE DATABASE ${config.database}`);
-        console.log(`Database ${config.database} created`);
-        await pool.close();
-        return;
-    }
-    catch (err)
-    {
-        console.log(err);
-    }
-}
 
 function timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -61,7 +29,7 @@ function timeout(ms) {
 const execQuery = async (query) => {
     try
     {
-        const pool = await sql.connect(config);
+        const pool = await sql.connect(conString);
 
         await pool.request()
         .query(query);
@@ -75,7 +43,7 @@ const execQuery = async (query) => {
 }
 
 const getSqlPaths = async () => {
-    const listPaths = await fs.readdir('/setup');
+    const listPaths = await fs.readdir('../setup');
     console.log(listPaths);
     return listPaths;
 };
@@ -88,7 +56,7 @@ const getSqlQueryFromFile = async (path) => {
 }
 
 const execSingleFile = async (path) => {
-    const query = await getSqlQueryFromFile(`/setup/${path}`);
+    const query = await getSqlQueryFromFile(`${setupDir}/${path}`);
     console.log('\x1b[32m%s\x1b[0m',`File ${path} is being executed -----------`);
     await execQuery(query);
     console.log('\x1b[33m%s\x1b[0m',`File ${path} has been executed successfully`);
@@ -102,27 +70,16 @@ const applyQuery = async () => {
         }
 }
 
-var dbCreatedFlag = false;
 var queryAppliedFlag = false;
 
 var numCon = 0;
 
 const sqlInit = async () => {
-    while(!dbCreatedFlag && numCon < 10)
-    {
-        await timeout(3000);
-        dbCreatedFlag = await tryConnect(masterDbConfig);
-
-        if(dbCreatedFlag){
-            await createDatabase();
-        }
-
-    }
 
     while(!queryAppliedFlag && numCon < 10)
     {
         await timeout(3000);
-        queryAppliedFlag = await tryConnect(config);
+        queryAppliedFlag = await tryConnect(conString);
         
         if(queryAppliedFlag)
         {
@@ -144,3 +101,5 @@ const sqlInit = async () => {
 }
 console.log("Applying database migration process, please wait until it completed, ...")
 setTimeout(sqlInit, 5000);
+
+

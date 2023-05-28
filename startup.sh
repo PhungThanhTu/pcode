@@ -5,4 +5,4 @@ mkdir -p example
 mkdir -p cg/memory
 mkdir -p cg/cpuacct
 docker-compose -f ./docker/dev/docker-compose.yml up -d --build
-# docker exec -it mssql node setup.js
+docker exec -it mssql node setup.js
