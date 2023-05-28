@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:18.04
 WORKDIR /usr/local/etc/isolate
 COPY ./engine/isolate .
 RUN apt-get update && apt-get -y install curl && apt-get -y install gcc && apt-get -y install libcap-dev && apt-get install make && apt-get -y install g++
