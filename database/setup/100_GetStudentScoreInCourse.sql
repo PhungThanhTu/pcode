@@ -9,8 +9,8 @@ create procedure GetStudentScoreInCourse
     CS.Score as Score
     from [dbo].[PlpCourseAuthorization] CU
     join [dbo].[PlpUser] U 
-    on CU.UserId = U.id
+        on CU.UserId = U.id
     join [dbo].[CourseScore] CS
-    on CS.UserId = U.id
+        on CS.UserId = U.id
+        and CS.CourseId = CU.CourseId
     where CU.CourseId = @CourseId
-
