@@ -21,7 +21,7 @@ create procedure GetStudentSubmissionWithScoreInDocument
         on E.Id = DE.ExerciseId
     join [dbo].[DocumentScore] DS 
         on DS.DocumentId = DE.DocumentId
-        and DS.UserId = U.id
+        and DS.UserId = SU.UserId
     join [dbo].[PlpUser] U
         on SU.UserId = U.id
     where S.Choice = 1
