@@ -1,5 +1,6 @@
 const sql = require('mssql');
 const sqlConfig = require('../configs/mssqlConfig');
+const { getInstance } = require('./pool');
 
 exports.createExerciseInDocumentSql = async (
     id,
@@ -10,7 +11,7 @@ exports.createExerciseInDocumentSql = async (
     manualPercentage,
     judgerId
     ) => {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     await pool.request()
         .input('Id', sql.UniqueIdentifier, id)
@@ -22,7 +23,6 @@ exports.createExerciseInDocumentSql = async (
         .input('JudgerId', sql.UniqueIdentifier, judgerId)
         .execute('CreateExerciseInDocument')
 
-    await pool.close();
 }
 
 exports.updateExerciseInDocumentSql = async (
@@ -37,7 +37,7 @@ exports.updateExerciseInDocumentSql = async (
     judgerId
 ) => {
 
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     await pool.request()
         .input('DocumentId', sql.UniqueIdentifier, documentId)
@@ -51,20 +51,16 @@ exports.updateExerciseInDocumentSql = async (
         .input('JudgerId', sql.UniqueIdentifier, judgerId)
         .execute('UpdateExerciseByDocumentId');
 
-    await pool.close();
-
 }
 
 exports.getExerciseInDocumentSql = async (
     documentId
 ) => {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     const request = await pool.request()
         .input('DocumentId', sql.UniqueIdentifier, documentId)
         .query('exec GetExerciseByDocumentId @DocumentId');
-    
-    await pool.close();
 
     const result = request.recordset[0];
     return result;
@@ -74,15 +70,13 @@ exports.mergeSampleSourceCodeInDocumentSql = async (
     documentId, 
     programmingLanguageId, 
     sourceCode) => {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     await pool.request()
         .input('DocumentId', sql.UniqueIdentifier, documentId)
         .input('ProgrammingLanguageId', sql.Int, programmingLanguageId)
         .input('SourceCode', sql.NVarChar, sourceCode)
         .execute('MergeSampleSourceCodeByDocumentId');
-    
-    await pool.close();
 
     return;
 }
@@ -91,14 +85,12 @@ exports.getSampleSourceCodeInDocumentSql = async (
     documentId,
     programmingLanguageId
 ) => {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     const request = await pool.request()
         .input('DocumentId', sql.UniqueIdentifier, documentId)
         .input('ProgrammingLanguageId', sql.Int, programmingLanguageId)
         .query('exec GetSampleSourceCodeByDocumentId @DocumentId, @ProgrammingLanguageId');
-    
-    await pool.close();
 
     const result = request.recordset[0];
     return result;

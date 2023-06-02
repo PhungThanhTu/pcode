@@ -1,14 +1,13 @@
 const sql = require('mssql');
 const sqlConfig = require('../configs/mssqlConfig');
+const { getInstance } = require('./pool');
 
 module.exports.getAllJudgersSql = async () => {
 
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     const request = await pool.request()
         .query('GetAllJudgers');
-    
-    await pool.close();
 
     const result = request.recordset;
 

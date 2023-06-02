@@ -2,6 +2,7 @@ const { BlobServiceClient } = require('@azure/storage-blob');
 const sql = require('mssql');
 const { conString, containerName } = require('../configs/blobConfig');
 const sqlConfig = require('../configs/mssqlConfig');
+const { getInstance } = require('./pool');
 
 const createMediaSql = async (
     id, 
@@ -11,7 +12,7 @@ const createMediaSql = async (
     download, 
     size) => 
 {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     await pool.request()
         .input('Id', sql.UniqueIdentifier, id)
@@ -22,18 +23,16 @@ const createMediaSql = async (
         .input('FileSize', sql.Float, size)
         .execute('CreateMedia');
 
-    await pool.close();
     return;
 }
 
 const deleteMediaSql = async (id) => {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     await pool.request()
         .input('Id', sql.UniqueIdentifier, id)
         .execute('DeleteMedia');
 
-    await pool.close();
     return;
 }
 
@@ -107,12 +106,11 @@ module.exports.uploadMedia = async (
 }
 
 module.exports.getMediaMetaDataSql = async (id) => {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     const request = await pool.request()
         .input('Id', sql.UniqueIdentifier, id)
         .query('exec GetMediaData @Id');
-    await pool.close();
 
     const result = request.recordset[0];
     
