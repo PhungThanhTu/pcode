@@ -1,15 +1,13 @@
 const sql = require('mssql');
-const sqlConfig = require('../configs/mssqlConfig');
+const { getInstance } = require('./pool');
 
 exports.getExerciseByIdSql = async (id) => {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     const request = await pool.request()
         .input('Id', sql.UniqueIdentifier, id)
         .query('exec GetExerciseById @Id');
     
-    await pool.close();
-
     const result = request.recordset[0];
 
     return result;

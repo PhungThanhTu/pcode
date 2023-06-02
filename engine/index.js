@@ -6,6 +6,7 @@ dotenv.config();
 const logger = require('./utils/logger')
 
 const { conString, queueName } = require('./configs/rabbitmqConfig');
+const { closeInstance } = require('./models/pool');
 
 async function sleep(milisec) {
     return await new Promise(r => setTimeout(r, milisec));
@@ -62,19 +63,22 @@ async function tryListeningForMessage() {
             }
         });
 
-        channel.on('error', (err) => {
+        channel.on('error', async (err) => {
             logger.error(err);
+            await closeInstance();
             channel.close();
         });
 
-        channel.on('close', () => {
+        channel.on('close', async () => {
             logger.warn('Channel closed, attempting to restart ...');
+            await closeInstance();
             tryListeningForMessage();
         })
     }
     catch (err)
     {
         logger.error(err);
+        await closeInstance();
         logger.warn('Consumer crashed, restarting ...');
         await sleep(5000);
         tryListeningForMessage();
