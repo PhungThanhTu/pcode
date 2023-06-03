@@ -13,6 +13,7 @@ var courseRouter = require('./routes/course');
 var documentRouter = require('./routes/document');
 var mediaRouter = require('./routes/media');
 var publicRouter = require('./routes/public');
+const { camelizeResponse } = require('./middlewares/common.middleware');
 
 var app = express();
 
@@ -21,6 +22,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
+app.use(camelizeResponse);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
