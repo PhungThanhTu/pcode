@@ -10,7 +10,7 @@ module.exports.nameToField = (name, upper) => {
 	return tmp.join('');
 };
 
-module.exports.toCamel = function (o) {
+const toCamel = function (o) {
     var newO, origKey, newKey, value
     if (o instanceof Array) {
       return o.map(function(value) {
@@ -34,3 +34,5 @@ module.exports.toCamel = function (o) {
     }
     return newO
   }
+
+module.exports.toCamel = toCamel
