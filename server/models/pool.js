@@ -4,16 +4,30 @@ const sqlConfig = require('../configs/mssqlConfig');
 var pool = null;
 
 const createInstance = async () => {
-    pool = await sql.connect(sqlConfig);
+    try {
+        pool = await sql.connect(sqlConfig);
+    }
+    catch {
+        throw new Error("Database connection fail");
+    }
 }
 
 const closeInstance = async () => {
-    await pool.close();
-    pool = null;
+    if(pool !== null)
+    {
+        if(pool.connected){
+            await pool.close();
+        }
+        pool = null;
+    }
 }
 
 const getInstance = async () => {
-    if(!pool) {
+    if(pool === null) {
+        await createInstance();
+    }
+    if(!pool.connected) {
+        await closeInstance();
         await createInstance();
     }
     return pool;
