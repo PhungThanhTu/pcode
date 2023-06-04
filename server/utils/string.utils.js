@@ -10,6 +10,9 @@ module.exports.nameToField = (name, upper) => {
 	return tmp.join('');
 };
 const toCamel = function (o) {
+    if(o instanceof String) {
+        return o;
+    }
     var newO, origKey, newKey, value
     if (o instanceof Array) {
       return o.map(function(value) {
