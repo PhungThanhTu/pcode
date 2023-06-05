@@ -124,7 +124,8 @@ const copyFile = async (source, dest) => {
     }
     catch (err)
     {
-        logger.success(`Copy file from ${source} to ${dest} failed`)
+        logger.error(`Copy file from ${source} to ${dest} failed`)
+        logger.error(err);
     }
 }
 
