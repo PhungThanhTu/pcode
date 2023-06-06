@@ -1,5 +1,6 @@
 const sql = require('mssql');
 const sqlConfig = require('../configs/mssqlConfig');
+const { getInstance } = require('./pool');
 
 exports.createSubmissionInDocumentSql = async (
     id,
@@ -8,7 +9,7 @@ exports.createSubmissionInDocumentSql = async (
     programmingLanguageId,
     sourceCode
 ) => {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     await pool.request()
         .input('Id', sql.UniqueIdentifier, id)
@@ -17,8 +18,6 @@ exports.createSubmissionInDocumentSql = async (
         .input('ProgrammingLanguageId', sql.Int, programmingLanguageId)
         .input('SourceCode', sql.NVarChar, sourceCode)
         .execute('CreateSubmissionInDocument');
-    
-    await pool.close();
 }
 
 exports.getProgrammingLanguagesSql = async () => {
@@ -32,14 +31,12 @@ exports.getMySubmissionInDocumentSql = async (
     documentId,
     userId
 ) => {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     const request = await pool.request()
         .input('DocumentId', sql.UniqueIdentifier, documentId)
         .input('UserId', sql.UniqueIdentifier, userId)
         .query('exec GetMySubmissionsInDocument @DocumentId, @UserId');
-    
-    await pool.close();
 
     const result = request.recordset;
 
@@ -50,14 +47,13 @@ exports.checkOwnerSubmissionSql = async (
     submissionId,
     userId
 ) => {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     const request = await pool.request()
         .input('UserId', sql.UniqueIdentifier, userId)
         .input('SubmissionId', sql.UniqueIdentifier, submissionId)
         .query('exec CheckOwnerSubmission @UserId, @SubmissionId')
     
-    await pool.close();
     
     const result = request.recordset[0];
 
@@ -68,23 +64,20 @@ exports.checkOwnerSubmissionSql = async (
 }
 
 exports.markSubmissionSql = async (submissionId) => {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     await pool.request()
         .input('Id', sql.UniqueIdentifier, submissionId)
         .execute('MarkSubmission');
 
-    await pool.close();
 }
 
 exports.getSingleSubmissionSql = async (submissionId) => {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     const request = await pool.request()
         .input('SubmissionId', sql.UniqueIdentifier, submissionId)
         .query('exec GetSingleSubmission @SubmissionId')
-    
-    await pool.close();
 
     const result = request.recordset[0];
 
@@ -92,36 +85,30 @@ exports.getSingleSubmissionSql = async (submissionId) => {
 }
 
 exports.deleteSubmissionByIdSql = async (submissionId) => {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     await pool.request()
         .input('SubmissionId', sql.UniqueIdentifier, submissionId)
         .execute('DeleteSubmissionById');
-    await pool.close();
 }
 
 exports.getStudentMarkedSubmissionsInDocumentSql = async (documentId) => {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     const request = await pool.request()
         .input('DocumentId', sql.UniqueIdentifier, documentId)
         .query('exec GetStudentMarkedSubmissionsInDocument @DocumentId');
-    
-    await pool.close();
-
     const result = request.recordset;
 
     return result;
 }
 
 exports.getTestResultBySubmissionIdSql = async (submissionId) => {
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getInstance();
 
     const request = await pool.request()
         .input('SubmissionId', sql.UniqueIdentifier, submissionId)
         .query('exec GetTestResultsBySubmissionId @SubmissionId');
-    
-    await pool.close();
 
     const result = request.recordset;
 
