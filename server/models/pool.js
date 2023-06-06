@@ -8,6 +8,7 @@ const createInstance = async () => {
         pool = await sql.connect(sqlConfig);
     }
     catch {
+        pool = null;
         throw new Error("Database connection fail");
     }
 }
@@ -27,7 +28,6 @@ const getInstance = async () => {
         await createInstance();
     }
     if(!pool.connected) {
-        await closeInstance();
         await createInstance();
     }
     return pool;
