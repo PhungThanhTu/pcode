@@ -20,6 +20,8 @@ exports.getInvitationSql = async (code) => {
         .input('code', sql.VarChar(5), code)
         .query('exec GetCourseIdByInvitationCode @code');
 
+    const result = request.recordset[0];
+
     
     return result;
 } 
