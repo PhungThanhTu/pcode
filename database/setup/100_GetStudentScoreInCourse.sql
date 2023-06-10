@@ -14,3 +14,4 @@ create procedure GetStudentScoreInCourse
         on CS.UserId = U.id
         and CS.CourseId = CU.CourseId
     where CU.CourseId = @CourseId
+    and CU.PlpRole != 0
