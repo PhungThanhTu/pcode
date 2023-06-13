@@ -20,6 +20,7 @@ BEGIN
         where TR.SubmissionId = @SubmissionId
         and TR.RunStatus = 1
         and TC.ExerciseId = @ExerciseId
+    select @RawScore = COALESCE(@RawScore,0);
     declare @MaxRawScore int 
     select @MaxRawScore = sum(ScoreWeight) from [dbo].[TestCase] TC 
         where ExerciseId = @ExerciseId
