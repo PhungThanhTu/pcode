@@ -24,13 +24,15 @@ create procedure GetStudentMarkedSubmissionsInDocument
     (
         select * from [dbo].[Submission]
         where Choice = 1
+        and ExerciseId = @ExerciseId
     ) S
     JOIN [dbo].[SubmissionUser] SU 
     on S.Id = SU.SubmissionId
     RIGHT JOIN
     (
         select * from [dbo].[PlpCourseAuthorization] PCA
-        where CourseId = @CourseId 
+        where CourseId = @CourseId
+        and PlpRole != 0
     ) PCA
     on PCA.UserId = SU.UserId
     LEFT JOIN [dbo].[PlpUser] PU
