@@ -67,25 +67,28 @@ BEGIN
             where DocumentId = @DocumentId
  
         
-        select @SumScore = sum(Score * ScoreWeight) from [dbo].[DocumentExercise] DE
-            join [dbo].[DocumentCourse] DC
-            on DE.DocumentId = DC.DocumentId
-            join [dbo].[Exercise] E
-            on DE.ExerciseId = E.Id
-            join [dbo].[DocumentScore] DS
-            on DS.DocumentId = DE.DocumentId
-            WHERE DE.DocumentId = @DocumentId
-            AND DE.ExerciseId = @ExerciseId
-            GROUP BY DC.CourseId
+        select @SumScore = sum(Score * ScoreWeight)
+            from [dbo].[DocumentExercise] DE
+                join [dbo].[DocumentCourse] DC
+                on DE.DocumentId = DC.DocumentId
+                join [dbo].[Exercise] E
+                on DE.ExerciseId = E.Id
+                join [dbo].[DocumentScore] DS
+                on DS.DocumentId = DE.DocumentId
+                WHERE DS.UserId = @UserId
+                and DC.CourseId = @CourseId
+                GROUP BY DC.CourseId
 
-        select @MaxScore = sum(10* ScoreWeight) from [dbo].[DocumentExercise] DE
-            join [dbo].[DocumentCourse] DC
-            on DE.DocumentId = DC.DocumentId
-            join [dbo].[Exercise] E
-            on DE.ExerciseId = E.Id
-            WHERE DE.DocumentId = @DocumentId
-            AND DE.ExerciseId = @ExerciseId
-            GROUP BY DC.CourseId
+
+        select @MaxScore = 
+            10*sum(ScoreWeight)
+            from [dbo].[DocumentExercise] DE
+                join [dbo].[DocumentCourse] DC
+                on DE.DocumentId = DC.DocumentId
+                join [dbo].[Exercise] E
+                on DE.ExerciseId = E.Id
+                Where DC.CourseId = @CourseId
+                GROUP BY DC.CourseId
 
         declare @CourseScore float
         set @CourseScore = @SumScore * 10.0 / @MaxScore
@@ -118,3 +121,35 @@ BEGIN
                 );
         END
 END
+
+
+
+        SELECT ExerciseId, DocumentId from [dbo].[DocumentExercise]
+        where DocumentId = '0FD5DF65-6043-4E98-B3B9-499CA89D5368'
+
+        select 
+        10*sum(ScoreWeight)
+        from [dbo].[DocumentExercise] DE
+            join [dbo].[DocumentCourse] DC
+            on DE.DocumentId = DC.DocumentId
+            join [dbo].[Exercise] E
+            on DE.ExerciseId = E.Id
+            Where DC.CourseId = 'a78b7761-e99f-4854-8e6a-ceec88f0fe51'
+            GROUP BY DC.CourseId
+
+select @SumScore =
+        sum(Score * ScoreWeight)
+        --*
+        from [dbo].[DocumentExercise] DE
+            join [dbo].[DocumentCourse] DC
+            on DE.DocumentId = DC.DocumentId
+            join [dbo].[Exercise] E
+            on DE.ExerciseId = E.Id
+            join [dbo].[DocumentScore] DS
+            on DS.DocumentId = DE.DocumentId
+            WHERE DS.UserId = 'cea4ce1c-84e8-4145-be87-a2aeef1635b0'
+            GROUP BY DC.CourseId
+
+select * from [dbo].[PlpUser] where username = '22521188'
+
+4,285714285713/30
