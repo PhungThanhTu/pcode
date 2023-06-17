@@ -3,7 +3,7 @@ var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
 const { authorizedRoute } = require('../middlewares/auth.middleware');
 const { getCourseByIdSql, getRoleInCourseSql } = require('../models/course.model');
-const { createDocumentSql, linkDocumentWithCourseSql, getDocumentContentTypes, deleteDocumentSql, updateDocumentSql, setDocumentPublicityAllCourseSql } = require('../models/document.model');
+const { createDocumentSql, linkDocumentWithCourseSql, getDocumentContentTypes, deleteDocumentSql, updateDocumentSql, setDocumentPublicityAllCourseSql, deleteUnmarkedSubmissionInDocumentSql } = require('../models/document.model');
 const { documentCreationSchema, documentUpdateSchema } = require('../schema/document.schema');
 const { contentUpdateSchema } = require('../schema/content.schema');
 const { uploadSingleFile } = require('../middlewares/media.middleware');
@@ -323,5 +323,22 @@ router.get(
             return handleExceptionInResponse(res, err);
         }
     });
+
+router.delete(
+    '/:documentId/unmarkedSubmission',
+    verifyExistingDocument,
+    verifyRoleDocument(0),
+    async (req, res) => {
+        try {
+            const documentId = req.params.documentId;
+            await deleteUnmarkedSubmissionInDocumentSql(documentId);
+            return res.sendStatus(200);
+        }
+        catch (err)
+        {
+            return handleExceptionInResponse(res, err);
+        }
+    }
+)
 
 module.exports = router;
