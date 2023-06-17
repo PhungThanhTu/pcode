@@ -106,3 +106,13 @@ exports.updateDocumentSql = async (id, title, description) => {
 
     return;
 }
+
+exports.deleteUnmarkedSubmissionInDocumentSql = async (documentId) => {
+    const pool = await getInstance();
+
+    await pool.request()
+        .input('DocumentId', sql.UniqueIdentifier, documentId)
+        .execute('DeleteUnmarkedSubmissionInDocument');
+    
+    return;
+}
