@@ -17,6 +17,5 @@ exports.handleExceptionInResponse = (res,err) => {
         )
     }
 
-    return res.sendStatus(400);
-        
+    return res.sendStatus(400);  
 }
