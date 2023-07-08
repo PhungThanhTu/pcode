@@ -35,3 +35,15 @@ exports.getStudentScoreInCourseSql = async (courseId) => {
 
     return result;
 }
+
+exports.getAllDetailScoreInCourseSql = async (courseId) => {
+    const pool = await getInstance();
+
+    const request = await pool.request()
+        .input('CourseId', sql.UniqueIdentifier, courseId)
+        .query('exec GetAllDetailScoreInCourse @CourseId');
+
+    const result = request.recordset;
+
+    return result;
+}

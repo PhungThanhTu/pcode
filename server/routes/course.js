@@ -9,7 +9,7 @@ const { nanoid } = require('nanoid');
 const { createInvitationSql, getInvitationSql } = require('../models/invitation.model');
 var router = express.Router();
 const joi = require('joi');
-const { getStudentScoreInCourseSql } = require('../models/scoring.model');
+const { getStudentScoreInCourseSql, getAllDetailScoreInCourseSql } = require('../models/scoring.model');
 
 router.post('/', authorizedRoute, async (req,res) => {
     try {
@@ -209,8 +209,12 @@ router.get('/:id/score', authorizedRoute, async (req, res) => {
 
         }
 
-        const result = await getStudentScoreInCourseSql(courseId);
-
+        const details = await getAllDetailScoreInCourseSql(courseId);
+        const scores = await getStudentScoreInCourseSql(courseId);
+        const result = scores.map(score => {
+            const userScores = details.filter(i => i.UserId === score.UserId);
+            return {...score,Details:userScores};
+          })
         return res.status(200).json(result);
     }
     catch (err)
