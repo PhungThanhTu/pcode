@@ -37,4 +37,3 @@ create procedure GetStudentMarkedSubmissionsInDocument
     on PCA.UserId = SU.UserId
     LEFT JOIN [dbo].[PlpUser] PU
     on PCA.UserId = PU.id
-

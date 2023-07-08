@@ -105,6 +105,30 @@ router.get('/manage', verifyRoleDocument(0), async (req, res) => {
     }
 })
 
+router.post('/regrade', verifyRoleDocument(0), async (req,res) => {
+    try {
+        const documentId = req.params.documentId;
+        const submissions = await getStudentMarkedSubmissionsInDocumentSql(documentId);
+        for ( const submission of submissions) {
+            const submissionId = submission.SubmissionId;
+            const messageObject = {
+                submissionId: submissionId,
+                type: 'JUDGE'
+            }
+    
+            const messageJson = JSON.stringify(messageObject);
+    
+            await trySendingMessage(messageJson);
+            console.log(submissionId);
+        }
+        return res.sendStatus(200);
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res, err);
+    }
+})
+
 router.get('/:id', verifyRoleDocument(0,1), async (req, res) => {
     try {
         const userId = req.identity;

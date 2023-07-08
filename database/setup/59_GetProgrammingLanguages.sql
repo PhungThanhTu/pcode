@@ -9,3 +9,4 @@ create procedure GetProgrammingLanguages
             CompileCommand,
             RunCommand
         from [dbo].[ProgrammingLanguage]
+
