@@ -1,7 +1,7 @@
 var express = require('express');
 const { randomUUID } = require('crypto');
 const { handleExceptionInResponse } = require('../exception');
-const { authorizedRoute } = require('../middlewares/auth.middleware');
+const { authorizedRoute, checkUserBanned } = require('../middlewares/auth.middleware');
 const { verifyExistingDocument, verifyRoleDocument } = require('../middlewares/document.middleware');
 const { exerciseCreateSchema, exerciseEditSchema, sampleSourceCodeSchema } = require('../schema/exercise.schema');
 const { createExerciseInDocumentSql, updateExerciseInDocumentSql, getExerciseInDocumentSql, mergeSampleSourceCodeInDocumentSql, getSampleSourceCodeInDocumentSql } = require('../models/exercise.model');
@@ -10,6 +10,7 @@ const { getProgrammingLanguagesSql } = require('../models/submission.model');
 var router = express.Router({ mergeParams: true });
 
 router.use(authorizedRoute);
+router.use(checkUserBanned);
 router.use(verifyExistingDocument);
 
 router.post('/', verifyRoleDocument(0), async (req, res) => {

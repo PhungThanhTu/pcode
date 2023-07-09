@@ -1,6 +1,6 @@
 var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
-const { authorizedRoute } = require('../middlewares/auth.middleware');
+const { authorizedRoute, checkUserBanned } = require('../middlewares/auth.middleware');
 const { verifyExistingDocument, verifyRoleDocument } = require('../middlewares/document.middleware');
 const { submissionCreationSchema } = require('../schema/submission.schema');
 const { randomUUID } = require('crypto');
@@ -14,6 +14,7 @@ var router = express.Router({mergeParams: true});
 const DEADLINE_TOLERANCE_IN_MINUTES = 10;
 
 router.use(authorizedRoute);
+router.use(checkUserBanned);
 router.use(verifyExistingDocument);
 
 router.post('/', verifyRoleDocument(0,1), async (req,res) => {
