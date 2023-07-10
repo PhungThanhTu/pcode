@@ -1,7 +1,7 @@
 const { randomUUID } = require('crypto');
 var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
-const { authorizedRoute } = require('../middlewares/auth.middleware');
+const { authorizedRoute, checkUserBanned } = require('../middlewares/auth.middleware');
 const { getCourseByIdSql, getRoleInCourseSql } = require('../models/course.model');
 const { createDocumentSql, linkDocumentWithCourseSql, getDocumentContentTypes, deleteDocumentSql, updateDocumentSql, setDocumentPublicityAllCourseSql, deleteUnmarkedSubmissionInDocumentSql } = require('../models/document.model');
 const { documentCreationSchema, documentUpdateSchema } = require('../schema/document.schema');
@@ -22,6 +22,7 @@ const { getStudentSubmissionWithScoreInDocumentSql } = require('../models/scorin
 var router = express.Router();
 
 router.use(authorizedRoute);
+router.use(checkUserBanned);
 
 router.use('/:documentId/exercise/', exerciseRouter);
 

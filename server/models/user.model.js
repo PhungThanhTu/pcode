@@ -70,3 +70,14 @@ exports.changePassword = async (id, hashedPassword) => {
 
     return;
 }
+
+exports.getUserStatusSql = async (id) => {
+    const pool = await getInstance();
+    const request = await pool.request()
+        .input('UserId',sql.UniqueIdentifier,id)
+        .query("exec GetUserStatus @UserId");
+    
+    const result = request.recordset;
+
+    return result[0];
+}

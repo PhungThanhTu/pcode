@@ -1,7 +1,7 @@
 const { randomUUID } = require('crypto');
 var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
-const { authorizedRoute } = require('../middlewares/auth.middleware');
+const { authorizedRoute, checkUserBanned } = require('../middlewares/auth.middleware');
 const { createCourseSql, getAllCourseSql, renameCourseSql, getCourseTitleUsingInvitationCodeSql, getCourseByIdSql, getDocumentsInCourseSql, getAllDocumentsInCourseSql, getPublishedDocumentInCourseSql } = require('../models/course.model');
 const { grantRoleToCourseSql, getRoleOfCourseSql } = require('../models/right.model');
 const { courseCreateRequestSchema } = require('../schema/course.schema');
@@ -11,7 +11,7 @@ var router = express.Router();
 const joi = require('joi');
 const { getStudentScoreInCourseSql, getAllDetailScoreInCourseSql } = require('../models/scoring.model');
 
-router.post('/', authorizedRoute, async (req,res) => {
+router.post('/', authorizedRoute, checkUserBanned, async (req,res) => {
     try {
         const courseCreateRequest =  req.body;
         const identity = req.identity;
@@ -50,7 +50,7 @@ router.post('/', authorizedRoute, async (req,res) => {
     }
 });
 
-router.get('/',authorizedRoute,async (req, res) => {
+router.get('/',authorizedRoute, checkUserBanned, async (req, res) => {
     try {
         const identity = req.identity;
 
@@ -64,7 +64,7 @@ router.get('/',authorizedRoute,async (req, res) => {
     }
 });
 
-router.get('/:id', authorizedRoute, async (req,res) => {
+router.get('/:id', authorizedRoute, checkUserBanned, async (req,res) => {
     const identity = req.identity;
     const courseId = req.params.id;
 
@@ -103,7 +103,7 @@ router.get('/:id', authorizedRoute, async (req,res) => {
     }
 })
 
-router.post('/join/:code', authorizedRoute, async (req, res) => {
+router.post('/join/:code', authorizedRoute, checkUserBanned, async (req, res) => {
     try {
         const identity = req.identity;
 
@@ -141,7 +141,7 @@ router.post('/join/:code', authorizedRoute, async (req, res) => {
     }
 });
 
-router.put('/:id', authorizedRoute, async ( req,res) => {
+router.put('/:id', authorizedRoute, checkUserBanned, async ( req,res) => {
 
     const identity = req.identity;
 
@@ -190,7 +190,7 @@ router.get('/info/:code', async (req,res) => {
     }
 })
 
-router.get('/:id/score', authorizedRoute, async (req, res) => {
+router.get('/:id/score', authorizedRoute, checkUserBanned, async (req, res) => {
     const identity = req.identity;
     const courseId = req.params.id;
 

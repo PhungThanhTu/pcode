@@ -2,9 +2,9 @@ const { randomUUID } = require('crypto');
 var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
 const { authorizedRoute } = require('../middlewares/auth.middleware');
-const { registerUser, getUserByUsername, getUserById, updateRefreshToken } = require('../models/user.model');
+const { registerUser, getUserByUsername, getUserById, updateRefreshToken, changePassword } = require('../models/user.model');
 const { registerRequestSchema, loginRequestSchema, refreshRequestSchema } = require('../schema/auth.schema');
-const { hashPassword, comparePassword, generateToken, decodeToken } = require('../utils/auth.utils');
+const { hashPassword, comparePassword, generateToken, decodeToken, verifyToken } = require('../utils/auth.utils');
 const randToken = require('rand-token');
 const { addDays } = require('../utils/datetime.utils');
 var router = express.Router();
@@ -141,6 +141,47 @@ router.post('/refresh',async (req,res) => {
     }
     catch (err) {
         return handleExceptionInResponse(res,err);
+    }
+
+})
+
+router.post('/resetPassword/:token', async (req, res) => {
+
+    try {
+        const token = req.params.token;
+        const secret = process.env.JWT_SECRET;
+        if(!token)
+            return res.sendStatus(403);
+        const tokenData = await verifyToken(token,secret);
+
+        if(!tokenData)
+        {
+            console.log("Invalid Token")
+            return res.sendStatus(403);
+        }
+
+        if(!tokenData.payload.passwordReset)
+        {
+            console.log("This is not reset password token");
+            return res.sendStatus(403);
+        }
+
+        const identity = tokenData.payload.id;
+
+        const password = req.body.password;
+        if(password.length < 3)
+        {
+            return res.status(400).send("Password must have more than 3 char");
+        }
+
+        const newHashedPassword = await hashPassword(password);
+        await changePassword(identity,newHashedPassword);
+
+        return res.sendStatus(200);
+    }
+    catch (err)
+    {
+        return handleExceptionInResponse(res, err);
     }
 
 })

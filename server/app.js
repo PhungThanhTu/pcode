@@ -13,6 +13,7 @@ var courseRouter = require('./routes/course');
 var documentRouter = require('./routes/document');
 var mediaRouter = require('./routes/media');
 var publicRouter = require('./routes/public');
+var adminRouter = require('./routes/admin');
 
 var app = express();
 
@@ -34,6 +35,7 @@ router.use('/course', courseRouter);
 router.use('/document', documentRouter);
 router.use('/media', mediaRouter);
 router.use('/public', publicRouter);
+router.use('/admin', adminRouter);
 
 app.use('/api',router);
 

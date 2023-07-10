@@ -1,13 +1,13 @@
 var express = require('express');
 const { handleExceptionInResponse } = require('../exception');
-const { authorizedRoute } = require('../middlewares/auth.middleware');
+const { authorizedRoute, checkUserBanned } = require('../middlewares/auth.middleware');
 const { getUserById, updateProfile, changePassword,  } = require('../models/user.model');
 const { updateProfileRequestSchema, changePasswordRequestSchema } = require('../schema/profile.schema');
 const { comparePassword, hashPassword } = require('../utils/auth.utils');
 var router = express.Router();
 
 
-router.get('/',authorizedRoute,async (req,res) => {
+router.get('/',authorizedRoute, checkUserBanned ,async (req,res) => {
     try {
         const identity = req.identity;
 
@@ -31,7 +31,7 @@ router.get('/',authorizedRoute,async (req,res) => {
     }
 });
 
-router.put('/',authorizedRoute, async (req,res) => {
+router.put('/',authorizedRoute, checkUserBanned, async (req,res) => {
     try {
         const identity = req.identity;
         const updateProfileRequest = req.body;
@@ -52,7 +52,7 @@ router.put('/',authorizedRoute, async (req,res) => {
     }
 });
 
-router.put('/password', authorizedRoute, async (req,res) => {
+router.put('/password', authorizedRoute, checkUserBanned, async (req,res) => {
     try {
         const identity = req.identity;
         const changePasswordRequest = req.body;
