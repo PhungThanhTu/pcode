@@ -5,3 +5,5 @@ create procedure DeleteDocument
         delete from [dbo].[DocumentExercise] where DocumentId = @Id
         delete from [dbo].[DocumentScore] where DocumentId = @Id
         delete from [dbo].[Document] where Id = @Id
+
+        select * from [dbo].[ProgrammingLanguage]

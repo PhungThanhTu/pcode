@@ -271,7 +271,10 @@ const judgeSubmissionTestcases = async (boxid, testcases, programmingLanguageSpe
     
     const testcasesWithJudgeStatus = [];
     const runCommand = programmingLanguageSpec.RunCommand;
-    const runScript = runCommand.replaceAll(FILENAME_PARAM_NAME, FILENAME);
+    const sourceCodeExtension = programmingLanguageSpec.FileExtension;
+    const runScript = runCommand
+        .replaceAll(FILENAME_PARAM_NAME, FILENAME)
+        .replaceAll(EXTENSION_PARAM_NAME, sourceCodeExtension);
     const judgerFileName = judger.FileName;
     for(const testcase of testcases) {
         const judgeStatus = await judgeSingleSubmissionTestcase(boxid, testcase, runScript, exerciseSpec, judgerFileName);
@@ -336,6 +339,7 @@ module.exports = {
             logger.success(`Retrieved source code ${sourceCode}`);
 
             const programmingLanguageSpec = await getProgrammingLanguageByIdSql(programmingLanguageId);
+            const needCompile = Number.parseInt(programmingLanguageSpec.NeedCompile) === 1;
             logger.success(`Retrieved programming language specification:`)
             logger.info(JSON.stringify(programmingLanguageSpec, null , 2));
 
@@ -355,6 +359,7 @@ module.exports = {
 
             const compileCommand = programmingLanguageSpec.CompileCommand || '';
             const sourceCodeExtension = programmingLanguageSpec.FileExtension;
+            const runCommand = programmingLanguageSpec.RunCommand;
 
             const paramAppliedCompileCommand =
                 compileCommand
@@ -395,11 +400,13 @@ module.exports = {
             await writeSourceCode(sourceCodePath,sourceCode);
             let testResults = [];
             try {
-                await compileSubmissionSourceCode(boxid, paramAppliedCompileCommand);
-
-                const compileResult = await verifySubmissionCompileResult(boxid);
-                logger.success(`Get compilation result success`);
-                logger.info(compileResult);
+                if(needCompile)
+                {
+                    await compileSubmissionSourceCode(boxid, paramAppliedCompileCommand);
+                    const compileResult = await verifySubmissionCompileResult(boxid);
+                    logger.success(`Get compilation result success`);
+                    logger.info(compileResult);
+                }
 
                 const testCasesWithJudgeStatus = await judgeSubmissionTestcases(boxid, testCases, programmingLanguageSpec, exerciseSpec, judger);
                 testResults = await getTestResultWithSuccess(boxid, testCasesWithJudgeStatus, exerciseSpec);
@@ -407,7 +414,8 @@ module.exports = {
             catch (err)
             {
                 logger.error(err);
-                testResults = await getTestResultWithCompilationError(boxid, testCases);
+                if(needCompile)
+                    testResults = await getTestResultWithCompilationError(boxid, testCases);
             }
 
             await updateSubmissionTestResultSql(submissionId, JSON.stringify(testResults));

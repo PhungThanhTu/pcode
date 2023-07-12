@@ -21,10 +21,14 @@ exports.createSubmissionInDocumentSql = async (
 }
 
 exports.getProgrammingLanguagesSql = async () => {
-    return Promise.resolve([
-        1,
-        2
-    ])
+    const pool = await getInstance();
+
+    const request = await pool.request()
+        .query('exec GetProgrammingLanguages');
+
+    const result = request.recordset.map(e => e.Id);
+
+    return result;
 }
 
 exports.getMySubmissionInDocumentSql = async (
