@@ -132,16 +132,13 @@ router.post('/sample', verifyRoleDocument(0), async (req, res) => {
         const sampleSourceCode = req.body;
         const validatedSourceCode = await sampleSourceCodeSchema.validateAsync(sampleSourceCode)
 
-        const programmingLanguages = [
-            1,
-            2
-        ]
+        const programmingLanguages = await getProgrammingLanguagesSql();
 
         if(!programmingLanguages.includes(programmingLanguageId))
         {
-            return res.status(404).send("programming language not found");
+            return res.status(403).send("programming language not supported");
         }
-
+        
         const document = await getExerciseInDocumentSql(documentId);
 
         if(!document)

@@ -3,7 +3,7 @@ insert into [dbo].[ProgrammingLanguage]
 (Id,LanguageName, DisplayName,FileExtension, NeedCompile, CompileCommand, RunCommand)
 VALUES 
 (3,
-'js',
+'javascript',
 'Nodejs',
 'js',
 '0',
@@ -15,13 +15,21 @@ insert into [dbo].[ProgrammingLanguage]
 (Id,LanguageName, DisplayName,FileExtension, NeedCompile, CompileCommand, RunCommand)
 VALUES 
 (4,
-'python3',
+'python',
 'Python 3.7',
 'py',
 '0',
 'echo compile',
 '/usr/bin/python3 $FILENAME.$EXTENSION')
 
-update [dbo].[ProgrammingLanguage]
-set RunCommand = '/usr/bin/python3 $FILENAME.$EXTENSION'
-where Id = 4
+
+insert into [dbo].[ProgrammingLanguage] 
+(Id,LanguageName, DisplayName,FileExtension, NeedCompile, CompileCommand, RunCommand)
+VALUES 
+(5,
+'lua',
+'Lua 5.3',
+'lua',
+'0',
+'echo compile',
+'/usr/bin/lua5.3 $FILENAME.$EXTENSION')

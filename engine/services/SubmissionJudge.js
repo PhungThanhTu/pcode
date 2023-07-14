@@ -339,7 +339,7 @@ module.exports = {
             logger.success(`Retrieved source code ${sourceCode}`);
 
             const programmingLanguageSpec = await getProgrammingLanguageByIdSql(programmingLanguageId);
-            const needCompile = Number.parseInt(programmingLanguageSpec.NeedCompile) === 1;
+            const needCompile = programmingLanguageSpec.NeedCompile;
             logger.success(`Retrieved programming language specification:`)
             logger.info(JSON.stringify(programmingLanguageSpec, null , 2));
 
