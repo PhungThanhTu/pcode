@@ -17,7 +17,7 @@ const FILENAME_PARAM_NAME = '$FILENAME';
 const FILENAME = 'source';
 const COMPILE_OUTPUT_FILENAME = 'compile.out';
 const COMPILE_META_FILENAME = 'compile.meta';
-const MAX_COMPILE_MEMORY = 128000;
+const MAX_COMPILE_MEMORY = 500000;
 const MAX_COMPILE_TIME = 2;
 const DEFAULT_ENV = 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin';
 const DEFAULT_JUDGER_PATH = '/engine/judger/';

@@ -5,7 +5,7 @@
   "scripts": {
     "prod": "pm2-runtime start ./bin/www -i max",
     "start": "if [ $NODENV = 'prod' ]; then npm run prod; else npm run dev; fi",
-    "dev": "nodemon ./bin/www"
+    "dev": "if [ $HOST_OS = 'win64' ]; then nodemon --legacy-watch ./bin/www; else nodemon ./bin/www; fi"
   },
   "dependencies": {
     "@azure/storage-blob": "^12.13.0",

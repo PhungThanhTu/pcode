@@ -84,7 +84,6 @@ router.get('/:id', async (req, res) => {
 
 router.patch('/:id', async (req, res) => {
     try {
-        console.log('Getting ');
         const documentId = req.params.documentId;
         const id = req.params.id;
         const testCaseRequest = req.body;

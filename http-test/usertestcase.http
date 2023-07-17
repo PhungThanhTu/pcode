@@ -1,0 +1,39 @@
+@endpoint = http://localhost:8000/api
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoiNEFENjI1RDgtOTAxOS00REI3LUJBMDktNzgzMTA4RjgwMkIwIn0sImlhdCI6MTY4OTQwOTkxMiwiZXhwIjoxNjg5NDk2MzEyfQ.LTB0C1rJQzfklIdiBwJSeowITxCP4gu-STV_FO6Gg_o
+@documentId = eb1ffa17-af78-4bd5-99b0-69d2eeaad73b
+###
+POST {{endpoint}}/document/{{documentId}}/mytestcase/
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+   "input": "1 3 4 5",
+   "output": "3"
+}
+
+###
+GET {{endpoint}}/document/{{documentId}}/mytestcase/
+Authorization: {{token}}
+
+###
+GET {{endpoint}}/document/{{documentId}}/mytestcase/1
+Authorization: {{token}}
+
+###
+PATCH {{endpoint}}/document/{{documentId}}/mytestcase/1
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+   "input": "6 6",
+   "output": "1 2"
+}
+###
+DELETE {{endpoint}}/document/{{documentId}}/mytestcase/2
+Authorization: {{token}}
+
+###
+POST {{endpoint}}/document/{{documentId}}/mytestcase/swap
+   ?order1=1
+   &order2=3
+Authorization: {{token}}

@@ -31,6 +31,7 @@ services:
     privileged: true
     image: plp_server
     environment:
+      - HOST_OS=win64
       - NODENV=dev
       - PORT=8000
       - MSSQL_HOST=mssql
@@ -70,6 +71,7 @@ services:
     image: plp_engine
     environment:
       # in case that docker nodemon need legacy-watch flag in Windows host
+      - HOST_OS=win64
       - NODENV=dev
       - MSSQL_HOST=mssql
       - MSSQL_PORT=1433
