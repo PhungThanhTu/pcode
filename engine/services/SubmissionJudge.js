@@ -391,7 +391,6 @@ module.exports = {
                     break;
             }
             const boxid = randomBoxId
-
             await createIsolateBox(boxid);
 
             const sourceCodePath = `${BOX_DIR_PREFIX}${boxid}/box/${FILENAME}.${sourceCodeExtension}`;

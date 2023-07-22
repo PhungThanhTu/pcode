@@ -30,11 +30,10 @@ VALUES
 -- '1',
 -- '/usr/local/bin/rustc linker=/usr/bin/cc $FILENAME.$EXTENSION',
 -- './$FILENAME')
-delete from [dbo].[ProgrammingLanguage] where Id = 5
 
-update [dbo].[ProgrammingLanguage]
-    set CompileCommand = '/usr/local/bin/rustc -C linker=/usr/bin/cc $FILENAME.$EXTENSION'
-    where Id = 5
+-- update [dbo].[ProgrammingLanguage]
+--     set CompileCommand = '/usr/local/bin/rustc -C linker=/usr/bin/cc $FILENAME.$EXTENSION'
+--     where Id = 5
 
 insert into [dbo].[ProgrammingLanguage] 
 (Id,LanguageName, DisplayName,FileExtension, NeedCompile, CompileCommand, RunCommand)
@@ -46,4 +45,3 @@ values
 '0',
 '',
 '/usr/local/bin/ruby ./$FILENAME.$EXTENSION')
-    
