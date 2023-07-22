@@ -45,3 +45,14 @@ values
 '0',
 '',
 '/usr/local/bin/ruby ./$FILENAME.$EXTENSION')
+
+insert into [dbo].[ProgrammingLanguage] 
+(Id,LanguageName, DisplayName,FileExtension, NeedCompile, CompileCommand, RunCommand)
+values
+(7,
+'javascript',
+'node 16',
+'js',
+'0',
+'',
+'/usr/bin/node ./$FILENAME.$EXTENSION')
