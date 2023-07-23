@@ -16,6 +16,7 @@ const { createContentSql, getContentByIdSql, getContentsByDocumentIdSql, deleteC
 var exerciseRouter = require('./exercise');
 var testcaseRouter = require('./testcase');
 var submissionRouter = require('./submission');
+var userTestcaseRouter = require('./usertestcase');
 const { getStudentMarkedSubmissionsInDocumentSql } = require('../models/submission.model');
 const { getStudentSubmissionWithScoreInDocumentSql } = require('../models/scoring.model');
 
@@ -29,6 +30,8 @@ router.use('/:documentId/exercise/', exerciseRouter);
 router.use('/:documentId/testcase/', testcaseRouter);
 
 router.use('/:documentId/submission/', submissionRouter);
+
+router.use('/:documentId/mytestcase/', userTestcaseRouter);
 
 const deleteAllDocumentContents = async (documentId) => {
 

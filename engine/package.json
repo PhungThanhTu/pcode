@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "if [ $NODENV = 'prod' ]; then npm run prod; else npm run dev; fi",
-    "dev": "nodemon index.js",
+    "dev": "if [ $HOST_OS = 'win64' ]; then nodemon --legacy-watch index.js; else nodemon index.js; fi",
     "prod": "pm2-runtime start index.js -i max"
   },
   "dependencies": {

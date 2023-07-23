@@ -1,0 +1,13 @@
+@endpoint = http://localhost:8000/api
+
+
+###
+POST {{endpoint}}/auth/login
+Content-Type: application/json
+
+{
+    "username":"lecturer",
+    "password":"12345"
+}
+
+###

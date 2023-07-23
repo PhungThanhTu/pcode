@@ -116,3 +116,15 @@ exports.deleteUnmarkedSubmissionInDocumentSql = async (documentId) => {
     
     return;
 }
+
+exports.getFirstExerciseByDocumentIdSql = async (documentId) => {
+    const pool = await getInstance();
+
+    const request = await pool.request()
+        .input('DocumentId', sql.UniqueIdentifier, documentId)
+        .query('exec GetFirstExerciseByDocumentId @DocumentId');
+    
+    const result = request.recordset[0];
+    
+    return result;
+}
