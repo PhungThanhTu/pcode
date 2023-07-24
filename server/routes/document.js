@@ -207,7 +207,7 @@ router.post(
                 }
 
                 const extension = getFileExtensions(fileName);
-                const mime = lookup(extension);
+                let mime = lookup(extension);
 
                 if(contentTypeId === 1 && extension !== 'pdf')
                 {
@@ -237,6 +237,7 @@ router.post(
         }
         catch (err)
         {
+            console.log(err);
             return handleExceptionInResponse(res, err);
         }
     });
