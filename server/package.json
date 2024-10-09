@@ -16,7 +16,7 @@
     "cors": "^2.8.5",
     "debug": "~2.6.9",
     "dotenv": "^16.0.3",
-    "express": "^4.19.2",
+    "express": "^4.20.0",
     "http-errors": "~1.6.3",
     "joi": "^17.7.0",
     "jsonwebtoken": "^9.0.0",
